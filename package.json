@@ -1,0 +1,44 @@
+{
+  "name": "fifa",
+  "version": "0.0.1",
+  "description": "",
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "bluebird": "^3.5.0",
+    "body-parser": "^1.16.0",
+    "consolidate": "^0.14.5",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.14.0",
+    "express-session": "^1.15.0",
+    "lodash": "^4.17.4",
+    "mongoose": "^4.11.14",
+    "passport": "^0.4.0",
+    "passport-facebook": "^2.1.1",
+    "passport-google-oauth": "^1.0.0",
+    "path": "^0.12.7",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2",
+    "swig": "^1.4.2"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "jquery": "^3.1.1",
+    "json-loader": "^0.5.4",
+    "request": "^2.79.0",
+    "request-promise": "^4.1.1",
+    "webpack": "^3.6.0",
+    "webpack-dev-server": "^2.8.2"
+  },
+  "scripts": {
+    "build": "webpack",
+    "watch": "webpack -w",
+    "client": "webpack-dev-server",
+    "server": "node app.js"
+  }
+}

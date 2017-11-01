@@ -1,0 +1,152 @@
+* {
+  font-family: 'Dosis';
+}
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+#root {
+  margin-top: -21px; /* why I need this... */
+  min-height: 100%;
+  position: relative;
+}
+
+header {
+  background: linear-gradient(to bottom, #eee, #333);
+  color: cyan;
+}
+
+#login div {
+  text-align: center;
+}
+
+#menu {
+  font-size: 2.0em;
+  text-align: center;
+  border-bottom: 1px dashed #ddd;
+}
+#you {
+  font-size: 0.8em;
+  float: right;
+}
+#logout {
+  vertical-align: middle;
+}
+.withdraw {
+  background-color: #C52;
+}
+.enter {
+  background-color: #4CAF50;
+}
+.leave {
+  background-color: #C52;
+}
+
+#gamerooms {
+  margin-top: 20px;
+  width: 100%;
+}
+#gamerooms .room {
+  display: inline-block;
+  vertical-align: text-bottom;
+  width: 150px;
+  padding: 5px;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+#gamerooms .room .image {
+  text-align: center;
+}
+#gamerooms .room .image img {
+  width: 100px;
+  height: 100px;
+}
+#gamerooms .room .name {
+  text-align: center;
+}
+#gamerooms .room .count {
+  text-align: center;
+}
+#gamerooms .room .count .maximum {
+  color: #777;
+  font-size: 0.8em;
+}
+#gamerooms .room:hover {
+  background-color: #dde;
+}
+#gamerooms .room:focus {
+  outline: 0px;
+}
+#gamerooms .room.selected {
+  background-color: #ded;
+  width: 300px;
+}
+#gamerooms .room.selected .close {
+  color: #c44;
+  font: 18px/100% arial, sans-serif;
+  float: right;
+  right: 5px;
+  text-decoration: none;
+  text-shadow: 0 1px 0 #fff;
+  top: 5px;
+}
+#gamerooms .room.selected .close:after {
+  content: '×';
+}
+#gamerooms .room.selected .image {
+  text-align: left;
+  margin-left: 10px;
+}
+#gamerooms .room.selected .name {
+  text-align: left;
+}
+#gamerooms .room.selected .count {
+  text-align: left;
+}
+#gamerooms .room.selected .description {
+  font-size: 0.8em;
+  color: #777;
+}
+
+#creation {
+  border: 1px solid #ddd;
+}
+#creation .field {
+  font-size: 0.8em;
+  text-align: right;
+  width: 1%;
+  white-space: nowrap;
+}
+#creation input {
+  box-sizing: border-box;
+  width: 100%;
+}
+#creation #submission {
+  border: none;
+  height: 52px;
+}
+footer {
+  margin-top: 5px;
+  border-top: 1px dotted #ddd;
+  font-size: 0.8em;
+  text-align: center;
+  position: absolute;
+  bottom:0;
+  width:100%;
+  height:20px;   /* Height of the footer */
+}
+
+.loader {
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
