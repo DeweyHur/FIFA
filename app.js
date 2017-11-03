@@ -10,8 +10,9 @@ let passport = require('passport');
 let path = require('path');
 let util = require('util');
 let config = require('./config');
-let authController = require('./controllers/auth');
-let userController = require('./controllers/user');
+let authAPI = require('./controllers/auth');
+let squadAPI = require('./controllers/squad');
+let userAPI = require('./controllers/user');
 
 const app = express();
 app.use(bodyParser.json());
@@ -57,13 +58,15 @@ app.get('/', (req, res) => {
   res.render('main', { user: _.get(req, 'session.passport.user') });
 });
 
-app.get('/auth/google', authController.googleAuth);
-app.get('/auth/google/callback', authController.googleAuthCallback);
-app.get('/auth/facebook', authController.facebookAuth);
-app.get('/auth/facebook/callback', authController.facebookAuthCallback);
-app.get('/auth/logout', authController.logout);
+app.get('/auth/google', authAPI.googleAuth);
+app.get('/auth/google/callback', authAPI.googleAuthCallback);
+app.get('/auth/facebook', authAPI.facebookAuth);
+app.get('/auth/facebook/callback', authAPI.facebookAuthCallback);
+app.get('/auth/logout', authAPI.logout);
 
-router.get('/user/me', userController.getMe);
+router.get('/user/me', userAPI.getMe);
+router.get('/squad/mine', squadAPI.getMine);
+router.put('/squad/mine/team/:teamid', squadAPI.setTeam);
 
 app.use('/api', router);
 

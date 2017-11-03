@@ -1,38 +1,15 @@
-const React = require('react');
-const ReactDOM = require('react-dom');
-const Header = require('./components/header.jsx');
-const LoginScreen = require('./screens/login.jsx');
-const TeamScreen = require('./screens/team.jsx');
+const nav = require('./components/nav.jsx');
+const squadProxy = require('./proxies/squad');
 const userProxy = require('./proxies/user');
 
-(async () => {
-  const me = await userProxy.fetchMe();
-  let body;
-  if (!me) {
-    body =
-      <div>
-        <Header title='LOGIN' />
-        <LoginScreen />
-      </div>;
-
-  } else if (!me.team) {
-    body =
-      <div>
-        <Header title='TEAM SELECTION' />
-        <TeamScreen />
-      </div>;
-
-  } else if (!me.squad) {
-    body =
-      <div>
-        <Header title='SQUAD' />
-      </div>;
-
-  } else {
-    body =
-      <div>
-        <Header title='HOME' />
-      </div>;
+(async (screen) => {
+  try {
+    const me = await userProxy.fetchMe();
+    console.log('Fetched me', me);
+    const squad = await squadProxy.fetchMine();
+    console.log('Fetched my squad', squad);
+  } catch (e) {
+    // Do nothing.
   }
-  ReactDOM.render(body, document.getElementById('root'));
+  nav.go();
 })();

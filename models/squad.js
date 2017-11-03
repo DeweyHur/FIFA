@@ -2,10 +2,10 @@
 let mongoose = require('mongoose');
 
 // Define our user schema
-let UserSchema = new mongoose.Schema({
+let SquadSchema = new mongoose.Schema({
   _id: String,
-  name: String,
+  teamid: Number,
 });
 
 // Export the Mongoose model
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.model('Squad', SquadSchema);

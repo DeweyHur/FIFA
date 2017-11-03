@@ -1,6 +1,10 @@
-const React = require('react');
 const Papa = require('papaparse');
-const Container = require('../components/container.jsx');
+const React = require('react');
+const userProxy = require('../proxies/user');
+const squadProxy = require('../proxies/squad');
+const nav = require('../components/nav.jsx');
+
+const GetItImage = "http://www.cormackcarr.com/wp-content/uploads/2013/07/Get-it-now-button.jpg";
 
 class Team extends React.Component {
   constructor(props) {
@@ -18,15 +22,19 @@ class Team extends React.Component {
       <div key="name">{team.name}</div>
     ];
     if (selected) {
-      children = [ ...children, 
-        <div key="attributes" className="attributes">
-          <span className="att">{team.att}</span> |&nbsp;
+      children = [...children,
+      <div key="attributes" className="attributes">
+        <span className="att">{team.att}</span> |&nbsp;
           <span className="mid">{team.mid}</span> |&nbsp;
           <span className="def">{team.def}</span>
-        </div>,
-        <img key="choose" className="getit" src="http://www.cormackcarr.com/wp-content/uploads/2013/07/Get-it-now-button.jpg" onClick={() => {
-          confirm(`Do you want to own ${team.name}?`);
-        }} />
+      </div>,
+      <img key="choose" className="getit" src={GetItImage} onClick={async () => {
+        if (confirm(`Do you want to own ${team.name}?`)) {
+          const squads = await squadProxy.setTeam(team.id);
+          console.log('Team Selected!', team.name, team.id, squads.data[userProxy.cache.myid]);
+          nav.go();
+        }
+      }} />
       ];
     }
 

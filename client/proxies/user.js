@@ -13,16 +13,18 @@ class UserProxy extends Proxy {
       localStorage.setItem('fifaweb-bearer', JSON.stringify(me.accessToken));
       this.assign({
         myid: me._id,
-        data: _.assign({}, this.cache.data, { [me._id]: me })
+        data: { ...this.cache.data, [me._id]: me }
       });
+      this.me = me;
       return me;
     } catch (e) {
       this.assign({
         myid: undefined
       });
+      delete this.me;
       return null;
     }
-  }  
+  }
 }
 
 module.exports = new UserProxy();
