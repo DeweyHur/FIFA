@@ -1,47 +1,32 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
 const Header = require('./header.jsx');
-const LoginScreen = require('../screens/login.jsx');
-const TeamScreen = require('../screens/team.jsx');
 const userProxy = require('../proxies/user');
 const squadProxy = require('../proxies/squad');
 
-exports.go = (screen) => {
-  let body;  
-  if (!userProxy.me) {
-    body =
-      <div>
-        <Header title='LOGIN' />
-        <LoginScreen />
-      </div>;
+const Screen = {
+  login: require('../screens/login.jsx'),
+  team: require('../screens/team.jsx'),
+  formation: require('../screens/formation.jsx'),
+};
 
-  } else {
+exports.go = (screen, props) => {
+  if (!userProxy.me) screen = 'login';
+  else {
     const squad = squadProxy.cache.data[userProxy.cache.myid];
-    if (!squad || !squad.teamid) {
-      body =
-        <div>
-          <Header title='TEAM SELECTION' />
-          <TeamScreen />
-        </div>;
-  
-    } else if (!squad.formations) {
-      body =
-        <div>
-          <Header title='SQUAD' />
-        </div>;
-  
-    } else {
-      switch (screen || '') {
-        default:
-          body =
-            <div>
-              <Header title='HOME' />
-            </div>;
-            break;
-      }
-    }    
+    if (!squad || !squad.teamid) screen = 'team';
+    else if (!squad.formations) screen = 'formation';
   }
-  
-  if (body)
-    ReactDOM.render(body, document.getElementById('root'));
+
+  if (Screen[screen]) {
+    const children = [
+      <Header title={screen.toUpperCase()} />,
+      React.createElement(Screen[screen], props)
+    ];
+    ReactDOM.render(
+      <div>
+        {children}
+      </div>, document.getElementById('root')
+    );
+  }
 };

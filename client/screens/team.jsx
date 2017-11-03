@@ -3,6 +3,7 @@ const React = require('react');
 const userProxy = require('../proxies/user');
 const squadProxy = require('../proxies/squad');
 const nav = require('../components/nav.jsx');
+const staticdata = require('../staticdata');
 
 const GetItImage = "http://www.cormackcarr.com/wp-content/uploads/2013/07/Get-it-now-button.jpg";
 
@@ -32,7 +33,7 @@ class Team extends React.Component {
         if (confirm(`Do you want to own ${team.name}?`)) {
           const squads = await squadProxy.setTeam(team.id);
           console.log('Team Selected!', team.name, team.id, squads.data[userProxy.cache.myid]);
-          nav.go();
+          nav.go('formation');
         }
       }} />
       ];
@@ -56,27 +57,17 @@ module.exports = class extends React.Component {
     this.handleChildClick = this.handleChildClick.bind(this);
   }
 
-  componentWillMount() {
-    Papa.parse(`${window.location.origin}/team.csv`, {
-      header: true,
-      dynamicTyping: true,
-      download: true,
-      complete: results => {
-        this.setState({ ...this.state, data: results.data });
-      }
-    });
-  }
-
   handleChildClick(item) {
     if (this.currentFocus) {
       this.currentFocus.setState({ ...this.state, selected: undefined });
       delete this.currentFocus;
     }
     this.currentFocus = item;
+
   }
 
   render() {
-    const children = this.state.data || [];
+    const children = staticdata.teams;
     return (
       <section id="team">
         {_.map(children, team => {
