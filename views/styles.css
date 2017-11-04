@@ -5,7 +5,6 @@ body {
   margin: 0;
   padding: 0;
   height: 100%;
-  background-color: #ccc;
 }
 #root {
   min-height: 100%;
@@ -71,6 +70,25 @@ footer {
   height: 20px;
 }
 
+#formation {
+  margin-top: 40px;
+  text-align: center;
+}
+#formation .slot {
+  display: inline-flex;
+  width: 70px;
+  height: 70px;
+  justify-content: center;
+  font-size: 0.6em;
+  border: 1px dotted #ccc;
+  overflow: hidden;
+}
+#formation .slot img {
+  width: 50px;
+  height: auto;
+  display: inline-flex;
+  object-fit: contain;
+}
 
 #menu {
   font-size: 2.0em;

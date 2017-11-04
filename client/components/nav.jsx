@@ -10,11 +10,12 @@ const Screen = {
   home: require('../screens/home.jsx'),
 };
 
-exports.go = (screen, props) => {
+exports.go = (screen = 'home', props = {}) => {
   if (!userProxy.me) screen = 'login';
   else {
     const squad = squadProxy.mySquad() || {};
-    if (!squad.teamid || !squad.formation) screen = 'team';
+    if (!squad.teamid || _.isEmpty(squad.formation)) 
+      screen = 'team';
   }
 
   if (Screen[screen]) {

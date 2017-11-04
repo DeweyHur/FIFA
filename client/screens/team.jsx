@@ -31,8 +31,8 @@ class Team extends React.Component {
       </div>,
       <img key="choose" className="getit" src={GetItImage} onClick={async () => {
         if (confirm(`Do you want to own ${team.name}?`)) {
-          const squads = await squadProxy.setTeam(team.id);
-          console.log('Team Selected!', team.name, team.id, squads.data[userProxy.cache.myid]);
+          const mysquad = await squadProxy.setTeam(team.id);
+          console.log('Team Selected!', team.name, team.id, mysquad);
           nav.go('home');
         }
       }} />

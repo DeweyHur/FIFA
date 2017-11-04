@@ -5,12 +5,14 @@ const staticdata = require('./staticdata');
 
 (async (screen) => {
   try {
-    const me = await userProxy.fetchMe();
-    console.log('Fetched me', me);
-    const squad = await squadProxy.fetchMine();
-    console.log('Fetched my squad', squad);
     const data = await staticdata.fetch();
     console.log('Fetched staticdata', data);
+    const me = await userProxy.fetchMe();
+    console.log('Fetched me', me);
+    if (me) {
+      const squad = await squadProxy.fetchMine();
+      console.log('Fetched my squad', squad);  
+    }
   } catch (e) {
     console.error(e);
   }

@@ -15,17 +15,22 @@ class SquadProxy extends Proxy {
 
   myFormation(phase) {
     const formation = this.mySquad().formation;
-    return Array(SlotsPerPhase).map((slot, index) => formation[phase * SlotsPerPhase + index]);
+    return Array.from({length: SlotsPerPhase}, (slot, index) => {
+      const playerid = formation[phase * SlotsPerPhase + index];
+      return playerid;
+    });
   }
 
   async setTeam(teamid) {
     const updates = await this.request('PUT', `/squad/mine/team/${teamid}`);
-    return this.assign({ data: { ...this.cache.data, ...updates } });
+    this.assign({ data: { ...this.cache.data, ...updates } });
+    return this.mySquad();
   }
 
   async fetchMine() {
     const updates = await this.request('GET', '/squad/mine');
-    return this.assign({ data: { ...this.cache.data, ...updates } });
+    this.assign({ data: { ...this.cache.data, ...updates } });
+    return this.mySquad();
   }
 }
 

@@ -15,12 +15,13 @@ class Slot extends React.Component {
     const { index, slot, onClick } = this.props;
     const image = `https://cdn.sofifa.org/18/players/${slot}.png`;
     if (slot) {
+      const player = staticdata.players[slot];
       return (
         <div className="slot occupied" onMouseOver={() => {
           // nav.go('playerlist', { slot, index });
         }}>
-          <img src={image} />
-          staticdata.players[slot]
+          <div><img src={image} /></div>
+          <div>{player.lastname[0]}. {player.firstname}</div>
         </div>
       );
 
@@ -38,9 +39,7 @@ module.exports = class extends React.Component {
   constructor(props) {
     super(props);
     this.handleChildClick = this.handleChildClick.bind(this);
-
-    const squad = squadProxy.mySquad();
-    this.state = { phase: 0, formation: squad.formation };
+    this.state = { phase: 0 };
   }
 
   handleChildClick(item) {
@@ -52,7 +51,8 @@ module.exports = class extends React.Component {
   }
 
   render() {
-    const { phase, formation } = this.state;
+    const { phase } = this.state;
+    const formation = squadProxy.myFormation(phase);
     return (
       <section id="formation">
         {formation.map((slot, index) => {

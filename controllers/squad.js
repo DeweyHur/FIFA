@@ -3,38 +3,52 @@ const util = require('./util');
 const Squad = require('../models/squad');
 const staticdata = require('../staticdata');
 
+const serializeSquad = (squad) => {
+  const result = {
+    id: squad._id,
+    teamid: squad.teamid,
+  };
+  return result;
+};
+
 exports.getMine = async (req, res) => {
   const userid = _.get(req, 'user._id');
   try {
     const squad = await Squad.findById(userid).lean();
-    res.status(200).send({ [squad._id]: squad });
+    if (squad && squad._id) {
+      res.status(200).send({ [squad._id]: squad });
+    } else
+      res.sendStatus(404);
 
   } catch (e) {
-    return util.error(res, 500, 'saving db error', e, userid);
+    return util.error(res, 500, 'findById db error', e, userid);
   }
 }
- 
+
 exports.setTeam = async (req, res) => {
   const userid = _.get(req, 'user._id');
   const teamid = _.get(req, 'params.teamid');
   if (userid) {
     let squad;
-    try { squad = await Squad.findById(userid).lean(); }
+    try { squad = await Squad.findById(userid); }
     catch (e) { console.log(`Creating a new squad.`, userid); }
-    if (!squad) squad = new Squad({ _id: userid }).lean();
+    if (!squad) squad = new Squad({ _id: userid });
     squad.teamid = teamid;
     squad.formation = {};
-    staticdata.teams[teamid].forEach((slot, index) => {
-      if (slot) {
-        for (const phase = 0; phase < 4; ++phase) {
-          squad.formation[phase * 25 + index] = slot;
+    const selectedTeam = staticdata.teams[teamid];
+    for (let index = 0; index < 25; ++index) {
+      const playerid = selectedTeam[index];
+      if (playerid) {
+        for (let phase = 0; phase < 4; ++phase) {
+          squad.formation[phase * 25 + index] = playerid;
         }
       }
-    });
+    }
 
     try {
       const result = await squad.save();
-      res.status(200).send({ [squad.id]: squad });
+      const theirSquad = squad.toObject();
+      res.status(200).send({ [squad.id]: theirSquad });
     } catch (e) {
       return util.error(res, 500, `saving db error`, e, teamid, squad);
     }
