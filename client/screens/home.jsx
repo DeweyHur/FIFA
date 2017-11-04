@@ -1,8 +1,9 @@
 const Papa = require('papaparse');
 const React = require('react');
-const userProxy = require('../proxies/user');
-const squadProxy = require('../proxies/squad');
 const nav = require('../components/nav.jsx');
+const UserSquad = require('../components/usersquad.jsx');
+const squadProxy = require('../proxies/squad');
+const userProxy = require('../proxies/user');
 const staticdata = require('../staticdata');
 
 class Slot extends React.Component {
@@ -20,8 +21,9 @@ class Slot extends React.Component {
         <div className="slot occupied" onMouseOver={() => {
           // nav.go('playerlist', { slot, index });
         }}>
+          <div className="ovr">{player.ovr}</div>
           <div><img src={image} /></div>
-          <div>{player.lastname[0]}. {player.firstname}</div>
+          <div>{player.lastname[0]} .{player.firstname}</div>
         </div>
       );
 
@@ -35,7 +37,6 @@ class Slot extends React.Component {
 }
 
 module.exports = class extends React.Component {
-
   constructor(props) {
     super(props);
     this.handleChildClick = this.handleChildClick.bind(this);
@@ -52,12 +53,16 @@ module.exports = class extends React.Component {
 
   render() {
     const { phase } = this.state;
-    const formation = squadProxy.myFormation(phase);
+    const myFormation = squadProxy.myFormation(phase);
+
     return (
-      <section id="formation">
-        {formation.map((slot, index) => {
-          return <Slot key={index} index={index} slot={slot} onClick={this.handleChildClick} />;
-        })}
+      <section id="home">
+        <UserSquad />
+        <div id="formation">
+          {myFormation.map((slot, index) => {
+            return <Slot key={index} index={index} slot={slot} onClick={this.handleChildClick} />;
+          })}
+        </div>
       </section>
     );
   }

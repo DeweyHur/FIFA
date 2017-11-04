@@ -24,7 +24,7 @@ class Team extends React.Component {
     ];
     if (selected) {
       children = [...children,
-      <div key="attributes" className="attributes">
+      <div key="attributes" className="teamattributes">
         <span className="att">{team.att}</span> |&nbsp;
           <span className="mid">{team.mid}</span> |&nbsp;
           <span className="def">{team.def}</span>
