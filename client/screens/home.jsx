@@ -36,6 +36,9 @@ class Slot extends React.Component {
   }
 }
 
+const DuelImage = "https://image.flaticon.com/icons/svg/53/53195.svg";
+const TeamSelectionImage = "https://d30y9cdsu7xlg0.cloudfront.net/png/20290-200.png";
+
 module.exports = class extends React.Component {
   constructor(props) {
     super(props);
@@ -62,6 +65,22 @@ module.exports = class extends React.Component {
           {myFormation.map((slot, index) => {
             return <Slot key={index} index={index} slot={slot} onClick={this.handleChildClick} />;
           })}
+        </div>
+        <div id="actions">
+          <div id="buttons">
+            <div className="button" id="duel" onClick={() => {
+              nav.go('match');
+            }}>
+              <img src={DuelImage} />
+              <span>Random Match</span>
+            </div>
+            <div className="button" id="team" onClick={() => {
+              nav.go('team');
+            }}>
+              <img src={TeamSelectionImage} />
+              <span>Select Team</span>
+            </div>
+          </div>
         </div>
       </section>
     );

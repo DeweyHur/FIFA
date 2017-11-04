@@ -72,7 +72,7 @@ footer {
   height: 20px;
 }
 #home {
-  margin: 8vh 0 0 8vw;
+  margin: 8vh 7vw;
 }
 #home #formation {
   display: grid;
@@ -89,13 +89,45 @@ footer {
 }
 #home #formation .slot .ovr {
   position: absolute;
-  font-size: 0.8em;
+  font-size: 1.4em;
+  margin-left: 1vw;
 }
 #home #formation .slot img {
   width: 50px;
   height: auto;
   display: inline-flex;
   object-fit: contain;
+}
+#home #actions {
+  position: fixed;
+  bottom: 5vh;
+  width: 85vw;
+}
+#home #actions #buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+#home #actions #buttons .button {
+  border: 1px solid #ccc;
+  margin: 1vh 2vw;
+  border-radius: 1vh 2vw;
+  padding: 1vh 2vw;
+  display: flex;
+}
+#home #actions #buttons #duel {
+  background-color: #4CAF50;
+}
+#home #actions #buttons #team {
+  background-color: #3498db;
+}
+#home #actions #buttons .button * {
+  display: inline-flex;
+  align-items: center;
+}
+#home #actions #buttons .button img {
+  width: 8vw;
+  height: 6vh;
+  margin: 1vh 2vw;
 }
 
 #usersquad {
@@ -111,7 +143,6 @@ footer {
 #usersquad .teamattributes {
   font-size: 0.8em;
 }
-
 #menu {
   font-size: 2.0em;
   text-align: center;
