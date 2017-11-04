@@ -9,10 +9,10 @@ const staticdata = require('./staticdata');
     console.log('Fetched me', me);
     const squad = await squadProxy.fetchMine();
     console.log('Fetched my squad', squad);
-    const staticdata = await staticdata.fetch();
-    console.log('Fetched static data');
+    const data = await staticdata.fetch();
+    console.log('Fetched staticdata', data);
   } catch (e) {
-    // Do nothing.
+    console.error(e);
   }
   nav.go();
 })();

@@ -5,6 +5,7 @@ let mongoose = require('mongoose');
 let SquadSchema = new mongoose.Schema({
   _id: String,
   teamid: Number,
+  formation: [{ id: Number, playerid: Number }]
 });
 
 // Export the Mongoose model

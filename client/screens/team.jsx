@@ -33,7 +33,7 @@ class Team extends React.Component {
         if (confirm(`Do you want to own ${team.name}?`)) {
           const squads = await squadProxy.setTeam(team.id);
           console.log('Team Selected!', team.name, team.id, squads.data[userProxy.cache.myid]);
-          nav.go('formation');
+          nav.go('home');
         }
       }} />
       ];

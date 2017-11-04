@@ -3,6 +3,7 @@ const React = require('react');
 const userProxy = require('../proxies/user');
 const squadProxy = require('../proxies/squad');
 const nav = require('../components/nav.jsx');
+const staticdata = require('../staticdata');
 
 class Slot extends React.Component {
   constructor(props) {
@@ -11,22 +12,18 @@ class Slot extends React.Component {
   }
 
   render() {
-    const { addible, index, slot, onClick } = this.props;
+    const { index, slot, onClick } = this.props;
+    const image = `https://cdn.sofifa.org/18/players/${slot}.png`;
     if (slot) {
       return (
         <div className="slot occupied" onMouseOver={() => {
-          nav.go('playerlist', { slot, index });
+          // nav.go('playerlist', { slot, index });
         }}>
+          <img src={image} />
+          staticdata.players[slot]
         </div>
       );
 
-    } else if (addible) {
-      return (
-        <div className="slot addible" onMouseOver={() => {
-          nav.go('playerlist', { slot, index });
-        }}>
-        </div>
-      );
     } else {
       return (
         <div className="slot empty">
@@ -37,15 +34,13 @@ class Slot extends React.Component {
 }
 
 module.exports = class extends React.Component {
+
   constructor(props) {
     super(props);
     this.handleChildClick = this.handleChildClick.bind(this);
 
-    const squad = squadProxy.cache.data[userProxy.cache.myid];
-    this.state = {
-      selectedIndex: 0,
-      formations: squad.formations || Array(4).fill(Array(25))
-    };
+    const squad = squadProxy.mySquad();
+    this.state = { phase: 0, formation: squad.formation };
   }
 
   handleChildClick(item) {
@@ -57,15 +52,14 @@ module.exports = class extends React.Component {
   }
 
   render() {
-    const { selectedIndex, formations } = this.state;
-    const formation = formations[selectedIndex];
-    const addible = formation.filter(slot => slot).length < 11;
+    const { phase, formation } = this.state;
     return (
       <section id="formation">
         {formation.map((slot, index) => {
-          return <Slot key={selectedIndex + '.' + index} addible={formation} index={index} slot={slot} onClick={this.handleChildClick} />;
+          return <Slot key={index} index={index} slot={slot} onClick={this.handleChildClick} />;
         })}
       </section>
     );
   }
 };
+

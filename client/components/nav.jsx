@@ -7,15 +7,14 @@ const squadProxy = require('../proxies/squad');
 const Screen = {
   login: require('../screens/login.jsx'),
   team: require('../screens/team.jsx'),
-  formation: require('../screens/formation.jsx'),
+  home: require('../screens/home.jsx'),
 };
 
 exports.go = (screen, props) => {
   if (!userProxy.me) screen = 'login';
   else {
-    const squad = squadProxy.cache.data[userProxy.cache.myid];
-    if (!squad || !squad.teamid) screen = 'team';
-    else if (!squad.formations) screen = 'formation';
+    const squad = squadProxy.mySquad() || {};
+    if (!squad.teamid || !squad.formation) screen = 'team';
   }
 
   if (Screen[screen]) {

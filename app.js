@@ -13,6 +13,7 @@ let config = require('./config');
 let authAPI = require('./controllers/auth');
 let squadAPI = require('./controllers/squad');
 let userAPI = require('./controllers/user');
+let staticdata = require('./staticdata');
 
 const app = express();
 app.use(bodyParser.json());
@@ -34,6 +35,7 @@ app.use(express.static('views'));
 app.use(passport.initialize());
 app.use(passport.session());
 
+staticdata.fetch();
 mongoose.Promise = Promise;
 
 let connection = `mongodb://${config.mongoose.username}:${config.mongoose.password}@fifacluster-shard-00-00-iact2.mongodb.net:27017,fifacluster-shard-00-01-iact2.mongodb.net:27017,fifacluster-shard-00-02-iact2.mongodb.net:27017/test?ssl=true&replicaSet=FIFACluster-shard-0&authSource=admin`;
