@@ -3,20 +3,12 @@ const util = require('./util');
 const Squad = require('../models/squad');
 const staticdata = require('../staticdata');
 
-const serializeSquad = (squad) => {
-  const result = {
-    id: squad._id,
-    teamid: squad.teamid,
-  };
-  return result;
-};
-
 exports.getMine = async (req, res) => {
   const userid = _.get(req, 'user._id');
   try {
-    const squad = await Squad.findById(userid).lean();
+    const squad = await Squad.findById(userid);
     if (squad && squad._id) {
-      res.status(200).send({ [squad._id]: squad });
+      res.status(200).send({ [squad._id]: squad.toObject() });
     } else
       res.sendStatus(404);
 
@@ -44,6 +36,7 @@ exports.setTeam = async (req, res) => {
         }
       }
     }
+    squad.markModified('formation');
 
     try {
       const result = await squad.save();
