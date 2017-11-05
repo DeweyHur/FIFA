@@ -9,16 +9,24 @@ class SquadProxy extends Proxy {
     this.cache = { };
   }
 
-  mySquad() {
-    return this.cache.data[userProxy.cache.myid];
+  whoseSquad(userid) {
+    return _.get(this.cache, `data["${userid}"]`);
   }
 
-  myFormation(phase) {
-    const formation = this.mySquad().formation;
+  whoseFormation(userid, phase) {
+    const formation = this.whoseSquad(userid).formation || {};
     return Array.from({length: SlotsPerPhase}, (slot, index) => {
       const playerid = formation[phase * SlotsPerPhase + index];
       return playerid;
     });
+  }
+
+  mySquad() {
+    return this.whoseSquad(userProxy.myid());
+  }
+
+  myFormation(phase) {
+    return this.whoseFormation(userProxy.myid(), phase);
   }
 
   async setTeam(teamid) {

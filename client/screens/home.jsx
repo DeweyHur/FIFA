@@ -56,11 +56,13 @@ module.exports = class extends React.Component {
 
   render() {
     const { phase } = this.state;
+    const userid = userProxy.myid();
     const myFormation = squadProxy.myFormation(phase);
+    const mySquad = squadProxy.mySquad();
 
     return (
       <section id="home">
-        <UserSquad />
+        <UserSquad userid={userid} teamid={mySquad.id} />
         <div id="formation">
           {myFormation.map((slot, index) => {
             return <Slot key={index} index={index} slot={slot} onClick={this.handleChildClick} />;
@@ -69,7 +71,7 @@ module.exports = class extends React.Component {
         <div id="actions">
           <div id="buttons">
             <div className="button" id="duel" onClick={() => {
-              nav.go('match');
+              nav.go('matchmaking');
             }}>
               <img src={DuelImage} />
               <span>Random Match</span>

@@ -7,6 +7,14 @@ class UserProxy extends Proxy {
     this.cache = { data: {} };
   }
 
+  who(userid) {
+    return _.get(this.cache, `data["${userid}"]`);
+  }
+
+  myid() {
+    return _.get(this.cache, "myid");
+  }
+
   async fetchMe() {
     try {
       const me = await this.request('GET', '/user/me');
