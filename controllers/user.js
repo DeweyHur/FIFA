@@ -10,6 +10,15 @@ exports.getMe = (req, res) => {
   }
 };
 
+exports.getUser = (req, res) => {
+  const user = _.get(req, 'params.userid');
+  if (user) {
+    res.send(user).status(200);
+  } else {
+    res.sendStatus(404);
+  }
+}
+
 exports.createUser = (email, name) => {
   return User.find({ _id: email })
     .then((users) => {

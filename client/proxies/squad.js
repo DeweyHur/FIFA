@@ -34,7 +34,7 @@ class SquadProxy extends Proxy {
     this.assign({ data: { ...this.cache.data, ...updates } });
     return this.mySquad();
   }
-
+  
   async fetchMine() {
     const updates = await this.request('GET', '/squad/mine');
     this.assign({ data: { ...this.cache.data, ...updates } });

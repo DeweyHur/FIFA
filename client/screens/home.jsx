@@ -62,7 +62,7 @@ module.exports = class extends React.Component {
 
     return (
       <section id="home">
-        <UserSquad userid={userid} teamid={mySquad.id} />
+        <UserSquad userid={userid} teamid={mySquad.teamid} />
         <div id="formation">
           {myFormation.map((slot, index) => {
             return <Slot key={index} index={index} slot={slot} onClick={this.handleChildClick} />;

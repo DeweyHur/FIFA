@@ -11,6 +11,7 @@ let path = require('path');
 let util = require('util');
 let config = require('./config');
 let authAPI = require('./controllers/auth');
+let matchAPI = require('./controllers/match');
 let squadAPI = require('./controllers/squad');
 let userAPI = require('./controllers/user');
 let staticdata = require('./staticdata');
@@ -67,8 +68,11 @@ app.get('/auth/facebook/callback', authAPI.facebookAuthCallback);
 app.get('/auth/logout', authAPI.logout);
 
 router.get('/user/me', userAPI.getMe);
+router.get('/user/:userid', userAPI.getUser);
 router.get('/squad/mine', squadAPI.getMine);
 router.put('/squad/mine/team/:teamid', squadAPI.setTeam);
+
+router.put('/match', matchAPI.make);
 
 app.use('/api', router);
 
