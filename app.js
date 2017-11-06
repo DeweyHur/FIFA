@@ -47,9 +47,9 @@ db.on('error', (err) => {
 });
 db.once('open', (callback) => {
   console.log('db open');
-  const { address, port } = config;
+  const { address } = config;
   app.listen(port, () => {
-    console.log(`Listening from ${address}:${port}...`);
+    console.log(`Listening from ${address}`);
   });
 });
 mongoose.connect(connection, {
