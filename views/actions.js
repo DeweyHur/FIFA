@@ -2,6 +2,7 @@ module.exports = {
   "BackPass": {
     "status": ["turnover", "ground", "kickoff"],
     "to": "ground",
+    "distance": 2,
     "weight": {
       "shortpassing": 1
     },
@@ -134,7 +135,7 @@ module.exports = {
       "dribbling": 1
     },
     "cost": 2,
-    "distance": 2
+    "distance": 3
   },
 
   "Sprint": {
@@ -235,5 +236,10 @@ module.exports = {
       [-1, 1, 1], [0, 1, 2],
       [0, 2, 1]
     ]
+  },
+  "Score": {
+    "status": ["shooting"],
+    "to": "kickoff",
+    "score": 1
   }
 }

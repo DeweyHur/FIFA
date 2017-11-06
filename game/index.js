@@ -3,28 +3,28 @@ const Actions = require('../views/actions');
 _.keys(Actions).forEach(name => Actions[name] = { ...Actions[name], name });
 
 const KickoffOrder = [2, 1, 3, 7, 6, 8];
-const SlotsPerPhase = 25;
-const DistanceMax = 20;
+const MaxSlotPerPhase = 25;
+const MaxPhase = 4;
+const MaxDistance = 20;
 const Columns = 5;
 const Rows = 5;
-const TotalPhase = 4;
 
 const getSlotIfValid = (slot, mod) => {
   const src = {
-    phase: Math.floor(slot / SlotsPerPhase),
+    phase: Math.floor(slot / MaxSlotPerPhase),
     x: slot % Columns,
-    y: Math.floor((slot % SlotsPerPhase) / Columns)
+    y: Math.floor((slot % MaxSlotPerPhase) / Columns)
   };
   const x = src.x + mod[0];
   const y = src.y + mod[1];
-  const newSlot = src.phase * SlotsPerPhase + x + y * Columns;
+  const newSlot = src.phase * MaxSlotPerPhase + x + y * Columns;
   if (0 <= x && x < Columns && 0 <= y && y < Rows) {
     return newSlot;
   } else {
     return null;
   }
 }
-const getOpponentSlot = (slot) => SlotsPerPhase - 1 - (slot % SlotsPerPhase) + Math.floor(slot / SlotsPerPhase) * SlotsPerPhase;
+const getOpponentSlot = (slot) => MaxSlotPerPhase - 1 - (slot % MaxSlotPerPhase) + Math.floor(slot / MaxSlotPerPhase) * MaxSlotPerPhase;
 
 /**
  * 
@@ -36,16 +36,18 @@ const sampleWithWeight = (array) => {
     totalWeight += weight;
     if (weight === 0) return slot;
   }
-  const picked = _.random(0, totalWeight, false);
+  const picked = _.random(0, totalWeight - 1, false);
+  console.log("SampleWithHeight", totalWeight, picked, array);
   let count = 0;
   for (const [slot, weight] of array) {
     totalWeight -= weight;
     if (totalWeight <= picked) return slot;
   }
+  console.error("WTF?!");
 }
 
 const findMarkman = (slot, opponentFormation, exempt) => {
-  const phase = Math.floor(slot / SlotsPerPhase);
+  const phase = Math.floor(slot / MaxSlotPerPhase);
   const opponentSlot = getOpponentSlot(slot);
   let markman = opponentFormation.getPlayer(opponentSlot);
   if (markman && markman !== exempt) return opponentSlot;
@@ -76,9 +78,9 @@ class Formation {
 
   targets(slot, action) {
     const src = {
-      phase: Math.floor(slot / SlotsPerPhase),
+      phase: Math.floor(slot / MaxSlotPerPhase),
       x: slot % Columns,
-      y: Math.floor(slot / Columns) % SlotsPerPhase
+      y: Math.floor(slot / Columns) % MaxSlotPerPhase
     };
 
     if (action.relatives) {
@@ -88,6 +90,7 @@ class Formation {
     }
     else if (action.absolutes) {
       return action.absolutes
+        .map(([slot, w]) => [slot + src.phase * MaxSlotPerPhase, w])
         .filter(([slot, w]) => slot && this.getPlayer(slot));
     }
     else {
@@ -110,34 +113,34 @@ class Turn {
   }
 
   toObject() {
-    return _.pick(this, ['user', 'phase', 'distance', 'slot', 'action', 'status']);
+    return _.pick(this, ['user', 'phase', 'distance', 'slot', 'action', 'status', 'markman']);
   }
 
   turnover() {
-    this.phase = TotalPhase - this.phase - 1;
-    this.user = (this.user + 1) % 2;
-    this.distance = DistanceMax - this.distance;
-  
+    return { 
+      phase: MaxPhase - this.phase - 1,
+      user: (this.user + 1) % 2,
+      distance: MaxDistance - this.distance
+    };
   }
 
-  do(action) {
-    this.markman = findMarkman(this.slot, this.formations[(this.user + 1) % 2], this.markman);
+  validateAndDo(action) {
+    let newTurn = { action: action.name, status: action.to };
+    newTurn.markman = findMarkman(this.slot, this.formations[(this.user + 1) % 2], this.markman);
 
-    if (/keeper|turnover/.test(action.to)) {
-      this.turnover();
-      if (/keeper/.test(action.to)) {
-        delete this.slot;
-      } else {
-        this.slot = this.markman;
+    if (/kickoff|keeper|turnover/.test(action.to)) {
+      newTurn = { ...newTurn, ...this.turnover() }
+      switch (action.to) {
+        case 'keeper': delete this.slot; break;
+        case 'turnover': newTurn.slot = newTurn.markman; break;
+        case 'score': 
+          newTurn.slot = this.formations[newTurn.user].kickoffPlayer(); 
+          newTurn.score = this.score.slice();
+          ++newTurn.score[this.user];
+          break;
       }
     }
     else {
-      if (action.distance) {
-        this.distance += action.distance;
-        if (this.distance < 0) this.phase = Math.max(this.phase - 1, 0);
-        else if (this.distance > 20) this.phase = Math.min(this.phase + 1, 3);
-      }
-
       let targets;
       if (/aerial/.test(action.to)) {
         targets = [
@@ -148,14 +151,45 @@ class Turn {
       else {
         targets = this.formations[this.user].targets(this.slot, action);
       }
-      if (targets) this.slot = sampleWithWeight(targets);
-      if (this.slot < 0) {
-        this.slot = -this.slot - 1;
-        this.turnover();
+      if (targets) {
+        if (targets.length === 0) return false;
+        const slot = sampleWithWeight(targets);
+      }
+
+      if (action.distance) {
+        newTurn.distance = this.distance + action.distance;
+        if (newTurn.distance < 0) {
+          if (this.phase > 0) {
+            newTurn.phase = this.phase - 1;
+            newTurn.distance += MaxDistance;
+          } 
+          else {
+            newTurn.distance = 0;
+          }
+        }
+        else if (newTurn.distance > MaxDistance) {
+          if (this.phase < MaxPhase - 1) {
+            newTurn.phase = this.phase + 1;
+            newTurn.distance -= MaxDistance;
+          } 
+          else {
+            newTurn.distance = MaxDistance;
+          }
+        }
+      }
+
+      if (targets && targets.length === 0) return false;
+      if (!_.isEmpty(targets)) newTurn.slot = sampleWithWeight(targets);
+      if (newTurn.slot < 0) {
+        newTurn.slot = -newTurn.slot - 1;
+        newTurn = { ...newTurn, ...newTurn.turnover() };
       }
     }
-    this.action = action.name;
-    this.status = action.to;
+    
+    for (const param in newTurn) {      
+      this[param] = newTurn[param];
+    }
+    return true;
   }
 }
 
@@ -166,12 +200,12 @@ module.exports = (homeFormation, awayFormation) => {
   console.log(record);
   const history = [record];
 
-  for (let time = 1; time < 100 || turn.phase !== 3; ++time) {
+  for (let time = 1; time < 100 || turn.phase === MaxPhase - 1; ++time) {
     const actions = _.values(Actions).filter(action => {
       return action.status.some(item => item === turn.status) && (!action.phase || action.phase === turn.phase);
     });
     const nextAction = _.sample(actions);
-    turn.do(nextAction);
+    turn.validateAndDo(nextAction);
     record = { time, ...turn.toObject(), scores: scores.slice() }
     console.log(record);
     history.push(record);
