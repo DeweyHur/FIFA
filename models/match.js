@@ -11,6 +11,7 @@ let MatchSchema = new mongoose.Schema({
   awayUserId: String,
   awayTeamId: Number,
   awayFormation: mongoose.Schema.Types.Mixed,
+  history: [mongoose.Schema.Types.Mixed]
 });
 
 // Export the Mongoose model

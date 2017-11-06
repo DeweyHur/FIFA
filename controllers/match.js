@@ -2,6 +2,7 @@ const _ = require('lodash');
 const mongoose = require('mongoose');
 const Match = require('../models/match');
 const Squad = require('../models/squad');
+const DoAMatch = require('../game');
 
 exports.make = async (req, res) => {
   const homeUserId = _.get(req, 'user._id');
@@ -18,12 +19,15 @@ exports.make = async (req, res) => {
       awayUserId: away._id,
       awayTeamId: away.teamid,
       awayFormation: away.formation,
+      history: DoAMatch(home.formation, away.formation)
     });
     match.markModified('homeFormation');
     match.markModified('awayFormation');
+    
     const results = await match.save();
     const serialized = match.toObject();
-    console.log('match created.', serialized);
+    console.log('match created.');
+
     res.status(200).send({ [match._id]: serialized });
 
   } catch (e) {

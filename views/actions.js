@@ -1,6 +1,6 @@
 module.exports = {
   "BackPass": {
-    "status": ["ground", "kickoff"],
+    "status": ["turnover", "ground", "kickoff"],
     "to": "ground",
     "weight": {
       "shortpassing": 1
@@ -11,7 +11,7 @@ module.exports = {
     ],
   },
   "ShortPass": {
-    "status": ["ground"],
+    "status": ["turnover", "ground"],
     "to": "ground",
     "weight": {
       "shortpassing": 1
@@ -42,7 +42,7 @@ module.exports = {
     },
   },
   "LeftSidePass": {
-    "status": ["ground"],
+    "status": ["turnover", "ground"],
     "to": "ground",
     "weight": {
       "longpassing": 1
@@ -51,7 +51,7 @@ module.exports = {
     "absolutes": [[10, 5], [15, 5], [20, 5]]
   },
   "RightSidePass": {
-    "status": ["ground"],
+    "status": ["turnover", "ground"],
     "to": "ground",
     "weight": {
       "longpassing": 1
@@ -153,6 +153,7 @@ module.exports = {
       "heading": 1
     },
     "cost": 2,
+    "phase": 3,
     "constraint": [1, 2, 3]
   },
   "VolleyShot": {
@@ -162,15 +163,17 @@ module.exports = {
       "finishing": 1
     },
     "cost": 2,
+    "phase": 3,
     "constraint": [1, 2, 3]
   },
   "LongShot": {
-    "status": ["ground"],
+    "status": ["turnover", "ground"],
     "to": "shooting",
     "cost": 2,
     "weight": {
       "shotpower": 1
     },
+    "phase": 3,
     "constraint": [6, 7, 8]
   },
   "Grab": {
