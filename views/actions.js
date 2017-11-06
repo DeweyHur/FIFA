@@ -108,6 +108,7 @@ module.exports = {
     "status": ["ground"],
     "to": "aerial",
     "constraint": [0, 4, 5, 9],
+    "phase": 3,
     "weight": {
       "crossing": 1
     },
@@ -120,6 +121,7 @@ module.exports = {
     "status": ["ground"],
     "to": "ground",
     "constraint": [0, 4, 5, 9],
+    "phase": 3,
     "weight": {
       "crossing": 1
     },

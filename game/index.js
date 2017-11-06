@@ -37,7 +37,6 @@ const sampleWithWeight = (array) => {
     if (weight === 0) return slot;
   }
   const picked = _.random(0, totalWeight - 1, false);
-  console.log("SampleWithHeight", totalWeight, picked, array);
   let count = 0;
   for (const [slot, weight] of array) {
     totalWeight -= weight;
@@ -202,10 +201,12 @@ module.exports = (homeFormation, awayFormation) => {
 
   for (let time = 1; time < 100 || turn.phase === MaxPhase - 1; ++time) {
     const actions = _.values(Actions).filter(action => {
-      return action.status.some(item => item === turn.status) && (!action.phase || action.phase === turn.phase);
+      return action.status.some(item => item === turn.status) && 
+        (!action.phase || action.phase === turn.phase) &&
+        (!action.constraint || action.constraint.some(available => available === turn.slot % MaxSlotPerPhase));
     });
     const nextAction = _.sample(actions);
-    turn.validateAndDo(nextAction);
+    if (!turn.validateAndDo(nextAction)) continue;
     record = { time, ...turn.toObject(), scores: scores.slice() }
     console.log(record);
     history.push(record);
