@@ -8,7 +8,7 @@ const Screen = {
   login: require('../screens/login.jsx'),
   team: require('../screens/team.jsx'),
   home: require('../screens/home.jsx'),
-  matchmaking: require('../screens/matchmaking.jsx'),
+  match: require('../screens/match.jsx'),
 };
 
 exports.go = (screen = 'home', props = {}) => {

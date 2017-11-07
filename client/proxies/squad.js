@@ -6,7 +6,7 @@ const SlotsPerPhase = 25;
 class SquadProxy extends Proxy {
   constructor() {
     super();
-    this.cache = { };
+    this.cache = {};
   }
 
   whoseSquad(userid) {
@@ -15,10 +15,7 @@ class SquadProxy extends Proxy {
 
   whoseFormation(userid, phase) {
     const formation = this.whoseSquad(userid).formation || {};
-    return Array.from({length: SlotsPerPhase}, (slot, index) => {
-      const playerid = formation[phase * SlotsPerPhase + index];
-      return playerid;
-    });
+    return this.convertFormationToArray(formation);
   }
 
   mySquad() {
@@ -34,12 +31,19 @@ class SquadProxy extends Proxy {
     this.assign({ data: { ...this.cache.data, ...updates } });
     return this.mySquad();
   }
-  
+
   async fetchMine() {
     const updates = await this.request('GET', '/squad/mine');
     this.assign({ data: { ...this.cache.data, ...updates } });
     return this.mySquad();
   }
+}
+
+SquadProxy.prototype.convertFormationToArray = (formation, phase = 0) => {
+  return Array.from({ length: SlotsPerPhase }, (slot, index) => {
+    const playerid = formation[phase * SlotsPerPhase + index];
+    return playerid;
+  });
 }
 
 module.exports = new SquadProxy();
