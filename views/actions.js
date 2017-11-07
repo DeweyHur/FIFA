@@ -156,7 +156,6 @@ module.exports = {
       "heading": 1
     },
     "cost": 2,
-    "phase": 3,
     "constraint": [1, 2, 3]
   },
   "VolleyShot": {
@@ -166,7 +165,6 @@ module.exports = {
       "finishing": 1
     },
     "cost": 2,
-    "phase": 3,
     "constraint": [1, 2, 3]
   },
   "LongShot": {
@@ -176,7 +174,6 @@ module.exports = {
     "weight": {
       "shotpower": 1
     },
-    "phase": 3,
     "constraint": [6, 7, 8]
   },
   "Grab": {

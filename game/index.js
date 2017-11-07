@@ -120,6 +120,7 @@ class Turn {
     this.distance = 0;
     this.formations = [new Formation(homeFormation), new Formation(awayFormation)];
     this.slot = this.formations[this.user].kickoffPlayer();
+    this.scores = [0, 0];
     /**
      * kickoff|keep|aerial|shooting|keeper|throwing|corner(todo)|linebreaking(todo)
      */
@@ -127,7 +128,7 @@ class Turn {
   }
 
   toObject() {
-    return _.pick(this, ['user', 'phase', 'distance', 'slot', 'action', 'status', 'markman']);
+    return _.pick(this, ['user', 'phase', 'distance', 'slot', 'action', 'status', 'markman', 'scores']);
   }
 
   turnover() {
@@ -153,8 +154,8 @@ class Turn {
         case 'turnover': newTurn.slot = newTurn.markman; break;
         case 'kickoff':
           newTurn.slot = this.formations[newTurn.user].kickoffPlayer();
-          newTurn.scores = [ ...(this.scores || [0,0]) ];
-          ++newTurn.score[this.user];
+          newTurn.scores = [ ...this.scores ];
+          newTurn.scores[this.user] = newTurn.scores[this.user] + 1;
           break;
       }
     }
@@ -216,9 +217,8 @@ class Turn {
 
 module.exports.evaluate = (homeFormation, awayFormation) => {
   const turn = new Turn(homeFormation, awayFormation);
-  const scores = [0, 0];
   let time = 0;
-  let record = { time: time++, ...turn.toObject(), scores: scores.slice() };
+  let record = { time: time++, ...turn.toObject() };
   const history = [record];
 
   while (time < MaxTime || turn.phase === MaxPhase - 1) {
@@ -233,7 +233,7 @@ module.exports.evaluate = (homeFormation, awayFormation) => {
     if (/shooting|keeper/.test(turn.status))
       console.log("time", time, "phase", turn.phase, "slot", turn.slot, "action", nextAction.name);
   if (!turn.validateAndDo(nextAction)) continue;
-    record = { time: time++, ...turn.toObject(), scores: scores.slice() }
+    record = { time: time++, ...turn.toObject() }
     history.push(record);
   }
   return history;
