@@ -110,18 +110,18 @@ module.exports = class extends React.Component {
 
     let prevTurn;
     for (const turn of match.history) {
-      await new Promise(resolve => setTimeout(() => resolve(), SlideShowSeconds * 1000));
+      await new Promise(resolve => this.timeout = setTimeout(() => resolve(), SlideShowSeconds * 1000));
       console.log('Setting turn', turn);
       this.setState({ ...this.state, turn, prevTurn });
       prevTurn = turn;
     }
-    await new Promise(resolve => setTimeout(() => resolve(), SlideShowSeconds * 1000));
+    await new Promise(resolve => this.timeout = setTimeout(() => resolve(), SlideShowSeconds * 1000));
     console.log('Finalize turn');
     this.setState({ ...this.state, matchend: true });
   }
 
   render() {
-    const { match, turn, prevTurn } = this.state;
+    const { match, matchend, turn, prevTurn } = this.state;
     if (match) {
       const { homeUserId, homeTeamId, homeFormation, awayUserId, awayTeamId, awayFormation } = match;
       let children = [
@@ -161,9 +161,11 @@ module.exports = class extends React.Component {
               <b>{MaxDistance * MaxPhase - turn.phase * MaxDistance - turn.distance}m</b>
             </div>
           </div>,
-          <Formation key="formation" formation={formation} flip={turn.user === 1} />,
-          <Description key="description" turn={turn} prevTurn={prevTurn} formations={[homeFormation, awayFormation]} />,
+          <Formation key="formation" formation={formation} user={turn.user} ball={turn.slot} phase={turn.phase} />,
+          <Description key="description" turn={turn} prevTurn={prevTurn} matchend={matchend} formations={[homeFormation, awayFormation]} />,
           <div key="main" className="navButton" id="navHome" onClick={() => {
+            if (this.timeout)
+              clearTimeout(this.timeout);
             nav.go('home');
           }}>
             <img src={HomeImage} />

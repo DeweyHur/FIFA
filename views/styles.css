@@ -58,6 +58,7 @@ footer {
   border-collapse: collapse;
   text-align: center;
   align-items: center;
+  transition-duration: 1s;
 }
 .formation .slot .ovr {
   position: absolute;
@@ -69,6 +70,9 @@ footer {
   height: auto;
   display: inline-flex;
   object-fit: contain;
+}
+.formation .slot.ball {
+  background-color: #DC1
 }
 
 .navButton {

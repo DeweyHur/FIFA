@@ -1,6 +1,7 @@
 const React = require('react');
 const Player = require('./player.jsx');
 const staticdata = require('../staticdata');
+const { MaxSlotPerPhase } = require('../../game');
 
 class Slot extends React.Component {
   constructor(props) {
@@ -9,12 +10,15 @@ class Slot extends React.Component {
   }
 
   render() {
-    const { user, index, playerid, onClick } = this.props;
+    const { user, ball, slot, playerid, onClick } = this.props;
     const image = `https://cdn.sofifa.org/18/players/${playerid}.png`;
+    const classes = ["slot"];
     if (playerid) {
       const player = staticdata.players[playerid];
+      classes.push("occupied");
+      if (ball) classes.push("ball");
       return (
-        <div className="slot occupied" onMouseOver={() => {
+        <div className={classes.join(' ')} onMouseOver={() => {
           // nav.go('playerlist', { slot, index });
         }}>
           <div key="ovr" className="ovr">{player.ovr}</div>
@@ -24,8 +28,9 @@ class Slot extends React.Component {
       );
 
     } else {
+      classes.push("empty");
       return (
-        <div className="slot empty">
+        <div className={classes.join(" ")}>
         </div>
       );
     }
@@ -47,15 +52,16 @@ module.exports = class extends React.Component {
   }
 
   render() {
-    let { user, slot, formation, flip } = this.props;
-    if (flip) {
+    let { phase, user, ball, formation } = this.props;
+    if (user === 1) {
       formation = _.reverse(formation);
     }
 
     return (
       <div className="formation">
         {formation.map((playerid, index) => {
-          return <Slot key={index} user={user} index={index} playerid={playerid} onClick={this.handleChildClick} />;
+          const slot = (user === 1) ? (phase + 1) * MaxSlotPerPhase - 1 - index : phase * MaxSlotPerPhase + index;
+          return <Slot key={index} user={user} ball={slot === ball} slot={slot} playerid={playerid} onClick={this.handleChildClick} />;
         })}
       </div>
     );

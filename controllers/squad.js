@@ -26,8 +26,8 @@ exports.setTeam = async (req, res) => {
     catch (e) { console.log(`Creating a new squad.`, userid); }
     if (!squad) squad = new Squad({ _id: userid });
     squad.teamid = teamid;
-    squad.formation = {};
     const selectedTeam = staticdata.teams[teamid];
+    squad.formation = { GK: selectedTeam.GK };
     for (let index = 0; index < 25; ++index) {
       const playerid = selectedTeam[index];
       if (playerid) {
