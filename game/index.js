@@ -59,7 +59,8 @@ const findMarkman = (slot, opponentFormation, exempt) => {
   }
 
   return getRelatives([[-1, 0], [1, 0], [0, -1], [0, 1]]) ||
-    getRelatives([[-2, 0], [-1, -1], [0, -2], [1, -1], [2, 0], [1, 1], [0, 2]]);
+    getRelatives([[-2, 0], [-1, -1], [0, -2], [1, -1], [2, 0], [1, 1], [0, 2]]) ||
+    _.sample(_.values(opponentFormation));
 }
 
 class Formation {
@@ -195,11 +196,12 @@ class Turn {
 module.exports = (homeFormation, awayFormation) => {
   const turn = new Turn(homeFormation, awayFormation);
   const scores = [0, 0];
-  let record = { time: 0, ...turn.toObject(), scores: scores.slice() };
+  let time = 0;
+  let record = { time: time++, ...turn.toObject(), scores: scores.slice() };
   console.log(record);
   const history = [record];
 
-  for (let time = 1; time < 100 || turn.phase === MaxPhase - 1; ++time) {
+  while (time < 100 || turn.phase === MaxPhase - 1) {
     const actions = _.values(Actions).filter(action => {
       return action.status.some(item => item === turn.status) && 
         (!action.phase || action.phase === turn.phase) &&
@@ -207,7 +209,7 @@ module.exports = (homeFormation, awayFormation) => {
     });
     const nextAction = _.sample(actions);
     if (!turn.validateAndDo(nextAction)) continue;
-    record = { time, ...turn.toObject(), scores: scores.slice() }
+    record = { time: time++, ...turn.toObject(), scores: scores.slice() }
     console.log(record);
     history.push(record);
   }
