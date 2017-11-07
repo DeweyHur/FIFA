@@ -27,13 +27,13 @@ module.exports = class extends React.Component {
         <Formation key="formation" formation={myFormation} phase={0} />
         <div id="actions">
           <div id="buttons">
-            <div key="duel" className="navButton" id="duel" onClick={() => {
+            <div key="duel" className="navButton" id="navDuel" onClick={() => {
               nav.go('match');
             }}>
               <img src={DuelImage} />
               <span>Random Match</span>
             </div>
-            <div key="team" className="navButton" id="team" onClick={() => {
+            <div key="team" className="navButton" id="navTeam" onClick={() => {
               nav.go('team');
             }}>
               <img src={TeamSelectionImage} />

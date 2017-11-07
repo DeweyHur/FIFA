@@ -5,6 +5,7 @@ body {
   margin: 0;
   padding: 0;
   height: 100%;
+  font-size: 3vw;
 }
 #root {
   min-height: 100%;
@@ -37,14 +38,22 @@ footer {
   color: blue;
 }
 
+.awayteam {
+  color: #c44;
+}
+.hometeam {
+  color: #3498db;
+}
+
 .formation {
   display: grid;
   grid-template-columns: repeat(5, 17vw);  
   grid-template-rows: repeat(5, 19vw);
+  margin: 2vh 1vw;
 }
 .formation .slot {
   display: inline-grid;
-  font-size: 0.6em;
+  font-size: 0.8em;
   border: 1px dotted #ccc;
   border-collapse: collapse;
   text-align: center;
@@ -56,7 +65,7 @@ footer {
   margin-left: 1vw;
 }
 .formation .slot img {
-  width: 50px;
+  width: 14vw;
   height: auto;
   display: inline-flex;
   object-fit: contain;
@@ -67,20 +76,19 @@ footer {
   margin: 1vh 2vw;
   border-radius: 1vh 2vw;
   padding: 1vh 2vw;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  align-items: center;
+  justify-content: center;
 }
-.navButton#duel {
+.navButton#navDuel {
   background-color: #4CAF50;
 }
-.navButton#team {
+.navButton#navTeam {
   background-color: #3498db;
 }
-.navButton#team {
+.navButton#navHome {
   background-color: #4CAF50;
-}
-.navButton * {
-  display: inline-flex;
-  align-items: center;
 }
 .navButton img {
   width: 8vw;
@@ -98,37 +106,45 @@ footer {
   position: absolute;
 }
 #login div {
-  margin: 20px;
+  margin: 5vw;
+}
+#login img {
+  width: 80vw;
+}
+
+#team {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  justify-content: center;
+  margin: 3vh 2vw;
 }
 #team .team {
-  text-align: center;
-  display: inline-block;
-  vertical-align: text-bottom;
-  width: 100px;
-  padding: 5px;
-  border-radius: 5px;
+  border-radius: 1vw;
   transition: 0.3s;
-  font-size: 0.8em;
+  font-size: 1.2em;
+  text-align: center;
+  padding: 1vh 3vw;
 }
 #team .team .emblem {
-  width: 75px;
-  height: 75px;
+  width: 25vw;
+  height: auto;
 }
 #team .team:hover {
   background-color: #ded;
 }
 #team .getit {
-  text-align: center;
-  width: 85px;
-  height: 20px;
-}
-#home {
-  margin: 8vh 7vw;
+  width: 25vw;
+  height: auto;
 }
 
+#home {
+  margin: 4vh 7vw;
+}
+#home #usersquad {
+  transform: scaleX(2.2) scaleY(1.7);
+}
 #home #actions {
-  position: fixed;
-  bottom: 5vh;
   width: 85vw;
 }
 #home #actions #buttons {
@@ -139,6 +155,7 @@ footer {
 #usersquad {
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 #usersquad .name {
   padding: 0 4vw;
@@ -149,111 +166,34 @@ footer {
 #usersquad .teamattributes {
   font-size: 0.8em;
 }
-#menu {
+
+#match {
+  padding: 3vh 7vw;
+}
+#match #summary {
+  display: grid;
+  grid-template-columns: 1fr 3vw 2vw 3vw 1fr;  
+  align-items: center;
+}
+#match #score {
   font-size: 2.0em;
   text-align: center;
-  border-bottom: 1px dashed #ddd;
 }
-#you {
+#match #time {
   font-size: 0.8em;
-  float: right;
+  text-align: center;
+  margin-bottom: 1vh;
 }
-#logout {
-  vertical-align: middle;
+#match #extra {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  justify-content: center;
 }
-.withdraw {
-  background-color: #C52;
-}
-.enter {
-  background-color: #4CAF50;
-}
-.leave {
-  background-color: #C52;
+#match #extra div {
+  text-align: center;
 }
 
-#gamerooms {
-  margin-top: 20px;
-  width: 100%;
-}
-#gamerooms .room {
-  display: inline-block;
-  vertical-align: text-bottom;
-  width: 150px;
-  padding: 5px;
-  border-radius: 5px;
-  transition: 0.3s;
-}
-#gamerooms .room .image {
-  text-align: center;
-}
-#gamerooms .room .image img {
-  width: 100px;
-  height: 100px;
-}
-#gamerooms .room .name {
-  text-align: center;
-}
-#gamerooms .room .count {
-  text-align: center;
-}
-#gamerooms .room .count .maximum {
-  color: #777;
-  font-size: 0.8em;
-}
-#gamerooms .room:hover {
-  background-color: #dde;
-}
-#gamerooms .room:focus {
-  outline: 0px;
-}
-#gamerooms .room.selected {
-  background-color: #ded;
-  width: 300px;
-}
-#gamerooms .room.selected .close {
-  color: #c44;
-  font: 18px/100% arial, sans-serif;
-  float: right;
-  right: 5px;
-  text-decoration: none;
-  text-shadow: 0 1px 0 #fff;
-  top: 5px;
-}
-#gamerooms .room.selected .close:after {
-  content: '×';
-}
-#gamerooms .room.selected .image {
-  text-align: left;
-  margin-left: 10px;
-}
-#gamerooms .room.selected .name {
-  text-align: left;
-}
-#gamerooms .room.selected .count {
-  text-align: left;
-}
-#gamerooms .room.selected .description {
-  font-size: 0.8em;
-  color: #777;
-}
-
-#creation {
-  border: 1px solid #ddd;
-}
-#creation .field {
-  font-size: 0.8em;
-  text-align: right;
-  width: 1%;
-  white-space: nowrap;
-}
-#creation input {
-  box-sizing: border-box;
-  width: 100%;
-}
-#creation #submission {
-  border: none;
-  height: 52px;
-}
 footer {
   margin-top: 5px;
   border-top: 1px dotted #ddd;

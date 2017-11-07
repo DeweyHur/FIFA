@@ -10,11 +10,12 @@ exports.getMe = (req, res) => {
   }
 };
 
-exports.getUser = (req, res) => {
-  const user = _.get(req, 'params.userid');
-  if (user) {
-    res.send(user).status(200);
-  } else {
+exports.getUser = async (req, res) => {
+  try {
+    const userid = _.get(req, 'params.userid');
+    const user = await User.findById(userid).lean();
+    res.send(user).status(200);    
+  } catch (e) {
     res.sendStatus(404);
   }
 }
@@ -30,7 +31,7 @@ exports.createUser = (email, name) => {
             console.log(`User Created: ${user.name}(${user._id})`);
             return user;
           })
-          .catch(err => { 
+          .catch(err => {
             console.error(`User Creation Failed: ${name}(${email})`, err);
             throw err;
           });

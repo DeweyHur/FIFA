@@ -5,7 +5,7 @@ module.exports = (props) => {
   const { user, player } = props;
   const { lastname, firstname, number }= staticdata.players[player];
   return (
-    <span className={user === 1 ? "away" : "home"}>
+    <span className={user === 1 ? "awayteam" : "hometeam"}>
       {lastname[0]}. {firstname} ({number}) 
     </span>
   );

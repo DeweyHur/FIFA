@@ -9,12 +9,12 @@ module.exports = class extends React.Component {
       <section id="login">
         <div className="google">
           <a href="/auth/google">
-            <img width="191px" src={GoogleLoginImage} alt="Sign in with Google" />
+            <img src={GoogleLoginImage} alt="Sign in with Google" />
           </a>
         </div>
         <div className="facebook">
           <a href="/auth/facebook">
-            <img width="191px" src={FacebookLoginImage} alt="Sign in with Facebook" />
+            <img src={FacebookLoginImage} alt="Sign in with Facebook" />
           </a>
         </div>
       </section>

@@ -1,4 +1,5 @@
 const React = require('react');
+const Player = require('./player.jsx');
 const staticdata = require('../staticdata');
 
 class Slot extends React.Component {
@@ -8,17 +9,17 @@ class Slot extends React.Component {
   }
 
   render() {
-    const { index, slot, onClick } = this.props;
-    const image = `https://cdn.sofifa.org/18/players/${slot}.png`;
-    if (slot) {
-      const player = staticdata.players[slot];
+    const { user, index, playerid, onClick } = this.props;
+    const image = `https://cdn.sofifa.org/18/players/${playerid}.png`;
+    if (playerid) {
+      const player = staticdata.players[playerid];
       return (
         <div className="slot occupied" onMouseOver={() => {
           // nav.go('playerlist', { slot, index });
         }}>
-          <div className="ovr">{player.ovr}</div>
-          <div><img src={image} /></div>
-          <div>{player.lastname[0]} .{player.firstname}</div>
+          <div key="ovr" className="ovr">{player.ovr}</div>
+          <div key="portrait"><img src={image} /></div>
+          <Player key="name" user={user} player={playerid} />
         </div>
       );
 
@@ -46,12 +47,15 @@ module.exports = class extends React.Component {
   }
 
   render() {
-    const { formation } = this.props;
+    let { user, slot, formation, flip } = this.props;
+    if (flip) {
+      formation = _.reverse(formation);
+    }
 
     return (
       <div className="formation">
-        {formation.map((slot, index) => {
-          return <Slot key={index} index={index} slot={slot} onClick={this.handleChildClick} />;
+        {formation.map((playerid, index) => {
+          return <Slot key={index} user={user} index={index} playerid={playerid} onClick={this.handleChildClick} />;
         })}
       </div>
     );

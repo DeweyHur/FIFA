@@ -8,6 +8,9 @@ const MaxPhase = 4;
 const MaxDistance = 20;
 const Columns = 5;
 const Rows = 5;
+const MaxTime = 180;
+
+module.exports = { ...module.exports, MaxSlotPerPhase, MaxPhase, MaxDistance, MaxTime, Columns, Rows };
 
 const getSlotIfValid = (slot, mod) => {
   const src = {
@@ -60,7 +63,10 @@ const findMarkman = (slot, opponentFormation, exempt) => {
 
   return getRelatives([[-1, 0], [1, 0], [0, -1], [0, 1]]) ||
     getRelatives([[-2, 0], [-1, -1], [0, -2], [1, -1], [2, 0], [1, 1], [0, 2]]) ||
-    _.sample(_.values(opponentFormation));
+    _(opponentFormation.data)
+      .keys()
+      .filter(slot => MaxSlotPerPhase * phase <= slot && slot < MaxSlotPerPhase * (phase + 1))
+      .sample();
 }
 
 class Formation {
@@ -127,6 +133,7 @@ class Turn {
   validateAndDo(action) {
     let newTurn = { action: action.name, status: action.to };
     newTurn.markman = findMarkman(this.slot, this.formations[(this.user + 1) % 2], this.markman);
+    if (!newTurn.markman) return false;
 
     if (/kickoff|keeper|turnover/.test(action.to)) {
       newTurn = { ...newTurn, ...this.turnover() }
@@ -193,15 +200,14 @@ class Turn {
   }
 }
 
-module.exports = (homeFormation, awayFormation) => {
+module.exports.evaluate = (homeFormation, awayFormation) => {
   const turn = new Turn(homeFormation, awayFormation);
   const scores = [0, 0];
   let time = 0;
   let record = { time: time++, ...turn.toObject(), scores: scores.slice() };
-  console.log(record);
   const history = [record];
 
-  while (time < 100 || turn.phase === MaxPhase - 1) {
+  while (time < MaxTime || turn.phase === MaxPhase - 1) {
     const actions = _.values(Actions).filter(action => {
       return action.status.some(item => item === turn.status) && 
         (!action.phase || action.phase === turn.phase) &&
@@ -210,7 +216,6 @@ module.exports = (homeFormation, awayFormation) => {
     const nextAction = _.sample(actions);
     if (!turn.validateAndDo(nextAction)) continue;
     record = { time: time++, ...turn.toObject(), scores: scores.slice() }
-    console.log(record);
     history.push(record);
   }
   return history;

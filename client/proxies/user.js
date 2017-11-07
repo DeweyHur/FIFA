@@ -15,6 +15,9 @@ class UserProxy extends Proxy {
     let user = _.get(this.cache, `data["${userid}"]`);
     if (!user)
       user = await this.request('GET', `/user/${userid}`);
+    else
+      await Promise.resolve(() => user);
+    console.log('who', userid, user);
     return user;
   }
 
