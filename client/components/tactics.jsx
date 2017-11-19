@@ -10,16 +10,18 @@ module.exports = class extends React.Component {
   }
 
   handlePhaseUpdate(phase) {
-    this.setState({ ...this.state, phase });
+    if (this.props.editable === true)
+      this.setState({ ...this.state, phase });
   }
   
   render() {
-    const { user, formation, keeper } = this.props;
+    const { user, formation, keeper, ball, editable } = this.props;
     const phase = _.get(this.state, 'phase') || _.get(this.props, 'phase');
+
     return (
       <div className="tactics">
         <Phases key="phases" phase={phase} onUpdate={this.handlePhaseUpdate} />
-        <Formation key="formation" formation={formation} phase={phase} user={user} keeper={keeper} />
+        <Formation key="formation" formation={formation} phase={phase} user={user} ball={ball} keeper={keeper} />
       </div>
     );
   }

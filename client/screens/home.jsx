@@ -24,7 +24,7 @@ module.exports = class extends React.Component {
     return (
       <section id="home">
         <UserSquad key="userSquad" userid={userid} teamid={mySquad.teamid} />
-        <Tactics key="tactics" formation={myFormation} phase={phase} user={0} keeper={mySquad.formation.GK} />
+        <Tactics key="tactics" formation={myFormation} phase={phase} user={0} keeper={mySquad.formation.GK} editable={true} />
         <div id="actions">
           <div id="buttons">
             <div key="duel" className="navButton" id="navDuel" onClick={() => {
