@@ -8,13 +8,11 @@ const matchProxy = require('../proxies/match');
 const squadProxy = require('../proxies/squad');
 const userProxy = require('../proxies/user');
 const staticdata = require('../staticdata');
-const { MaxDistance, MaxPhase, MaxTime } = require('../../game');
+const { MaxDistance, MaxPhase, MaxTime, PhaseNames } = require('../../game');
 
 const HomeImage = "https://image.freepik.com/free-icon/worker-in-front-of-a-computer-monitor_318-47857.jpg";
 const SlideShowSeconds = 2;
-const PhaseNames = ['Buildup', 'Consolidation', 'Incision', 'Finishing'];
 const SecondsPerTime = 90 * 60 / MaxTime;
-
 
 const Description = (props) => {
   const { matchend, turn, prevTurn, formations } = props;

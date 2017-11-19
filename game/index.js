@@ -9,8 +9,9 @@ const MaxDistance = 20;
 const Columns = 5;
 const Rows = 5;
 const MaxTime = 180;
+const PhaseNames = ['Buildup', 'Consolidation', 'Incision', 'Finishing'];
 
-module.exports = { ...module.exports, MaxSlotPerPhase, MaxPhase, MaxDistance, MaxTime, Columns, Rows };
+module.exports = { ...module.exports, MaxSlotPerPhase, MaxPhase, MaxDistance, MaxTime, Columns, Rows, PhaseNames };
 
 const getSlotIfValid = (slot, mod) => {
   const src = {
