@@ -16,3 +16,4 @@ npm-debug.log
 xlsx
 config.js
 bundle.*
+package-lock.json

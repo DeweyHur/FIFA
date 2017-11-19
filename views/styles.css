@@ -74,6 +74,9 @@ footer {
 .formation .slot.ball {
   background-color: #DC1
 }
+.formation .slot.none {
+  border: none;
+}
 
 .navButton {
   border: 1px solid #ccc;

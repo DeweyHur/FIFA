@@ -141,6 +141,7 @@ module.exports = class extends React.Component {
       if (turn) {
         const description = [];
         const formation = squadProxy.convertFormationToArray(turn.user === 1 ? awayFormation : homeFormation, turn.phase);
+        const keeper = turn.user === 1 ? awayFormation.GK : homeFormation.GK;
 
         children = [
           ...children,
@@ -161,7 +162,7 @@ module.exports = class extends React.Component {
               <b>{MaxDistance * MaxPhase - turn.phase * MaxDistance - turn.distance}m</b>
             </div>
           </div>,
-          <Formation key="formation" formation={formation} user={turn.user} ball={turn.slot} phase={turn.phase} />,
+          <Formation key="formation" formation={formation} user={turn.user} ball={turn.slot} phase={turn.phase} keeper={keeper} />,
           <Description key="description" turn={turn} prevTurn={prevTurn} matchend={matchend} formations={[homeFormation, awayFormation]} />,
           <div key="main" className="navButton" id="navHome" onClick={() => {
             if (this.timeout)

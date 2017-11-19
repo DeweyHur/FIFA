@@ -37,6 +37,13 @@ class Slot extends React.Component {
   }
 }
 
+const NonSlot = (props) => {
+  return (
+    <div className="slot none">
+    </div>
+  );
+}
+
 module.exports = class extends React.Component {
   constructor(props) {
     super(props);
@@ -52,18 +59,34 @@ module.exports = class extends React.Component {
   }
 
   render() {
-    let { phase, user, ball, formation } = this.props;
+    let { phase, user, ball, formation, keeper } = this.props;
     if (user === 1) {
       formation = _.reverse(formation);
     }
 
+    let children = [
+      formation.map((playerid, index) => {
+        const slot = (user === 1) ? (phase + 1) * MaxSlotPerPhase - 1 - index : phase * MaxSlotPerPhase + index;
+        return <Slot key={index} user={user} ball={slot === ball} slot={slot} playerid={playerid} onClick={this.handleChildClick} />;
+      })
+    ];
+    const GKSlot = <Slot key="GK" user={user} ball={!ball} playerid={keeper} onClick={this.handleChildClick} />;
+    if (user === 1) {
+      children = [ 
+        <NonSlot />, <NonSlot />, GKSlot, <NonSlot />, <NonSlot />,
+        ...children 
+      ];
+    } else {
+      children = [
+        ...children,
+        <NonSlot />, <NonSlot />, GKSlot, <NonSlot />, <NonSlot />
+      ];
+    }
+
     return (
       <div className="formation">
-        {formation.map((playerid, index) => {
-          const slot = (user === 1) ? (phase + 1) * MaxSlotPerPhase - 1 - index : phase * MaxSlotPerPhase + index;
-          return <Slot key={index} user={user} ball={slot === ball} slot={slot} playerid={playerid} onClick={this.handleChildClick} />;
-        })}
+        {children}
       </div>
     );
-  }  
+  }
 };
