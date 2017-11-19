@@ -141,6 +141,7 @@ module.exports = class extends React.Component {
         const description = [];
         const formation = squadProxy.convertFormationToArray(turn.user === 1 ? awayFormation : homeFormation, turn.phase);
         const keeper = turn.user === 1 ? awayFormation.GK : homeFormation.GK;
+        const distance = MaxDistance * MaxPhase - turn.phase * MaxDistance - turn.distance;
 
         children = [
           ...children,
@@ -149,13 +150,7 @@ module.exports = class extends React.Component {
             {Math.floor(SecondsPerTime * turn.time / 60).toLocaleString('en', { minimumIntegerDigits: 2 })}
             :
             {((SecondsPerTime * turn.time) % 60).toLocaleString('en', { minimumIntegerDigits: 2 })}
-            )
-          </div>,
-          <div key="extra" id="extra">
-            <div key="distance" id="distance">
-              Distance to goal: &nbsp;
-              <b>{MaxDistance * MaxPhase - turn.phase * MaxDistance - turn.distance}m</b>
-            </div>
+            ) -> {distance}m        
           </div>,
           <Tactics key="tactics" formation={formation} user={turn.user} ball={turn.slot} phase={turn.phase} keeper={keeper} editable={false} />,
           <Description key="description" turn={turn} prevTurn={prevTurn} matchend={matchend} formations={[homeFormation, awayFormation]} />,
