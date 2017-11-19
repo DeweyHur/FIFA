@@ -1,9 +1,8 @@
 const Papa = require('papaparse');
 const React = require('react');
 const nav = require('../components/nav.jsx');
+const Tactics = require('../components/tactics.jsx');
 const UserSquad = require('../components/usersquad.jsx');
-const Formation = require('../components/formation.jsx');
-const Phases = require('../components/phases.jsx');
 const squadProxy = require('../proxies/squad');
 const userProxy = require('../proxies/user');
 
@@ -25,8 +24,7 @@ module.exports = class extends React.Component {
     return (
       <section id="home">
         <UserSquad key="userSquad" userid={userid} teamid={mySquad.teamid} />
-        <Phases key="phases" phase={phase} />
-        <Formation key="formation" formation={myFormation} phase={phase} user={0} keeper={mySquad.formation.GK} />
+        <Tactics key="tactics" formation={myFormation} phase={phase} user={0} keeper={mySquad.formation.GK} />
         <div id="actions">
           <div id="buttons">
             <div key="duel" className="navButton" id="navDuel" onClick={() => {
@@ -47,4 +45,3 @@ module.exports = class extends React.Component {
     );
   }
 };
-

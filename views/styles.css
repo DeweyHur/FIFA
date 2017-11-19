@@ -103,7 +103,7 @@ footer {
           #bdbdbd);
   color: #6b6b6b;
 }
-.phase:hover, .phase.selected {
+.phase.selected {
   background-image: 
       -webkit-gradient(linear, left top, left bottom, 
           from(#2a55b1), 
