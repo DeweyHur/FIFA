@@ -9,7 +9,7 @@ const matchProxy = require('../proxies/match');
 const squadProxy = require('../proxies/squad');
 const userProxy = require('../proxies/user');
 const staticdata = require('../staticdata');
-const { MaxDistance, MaxPhase, MaxTime, PhaseNames } = require('../../game');
+const { MaxDistancePerPhase, MaxPhase, MaxTime, PhaseNames } = require('../../game');
 
 const HomeImage = "https://image.freepik.com/free-icon/worker-in-front-of-a-computer-monitor_318-47857.jpg";
 const SlideShowSeconds = 2;
@@ -141,7 +141,7 @@ module.exports = class extends React.Component {
         const description = [];
         const formation = squadProxy.convertFormationToArray(turn.user === 1 ? awayFormation : homeFormation, turn.phase);
         const keeper = turn.user === 1 ? awayFormation.GK : homeFormation.GK;
-        const distance = MaxDistance * MaxPhase - turn.phase * MaxDistance - turn.distance;
+        const distance = MaxDistancePerPhase * MaxPhase - turn.phase * MaxDistancePerPhase - turn.distance;
 
         children = [
           ...children,
