@@ -40,9 +40,11 @@ footer {
 
 .awayteam {
   color: #c44;
+  fill: #c44;
 }
 .hometeam {
   color: #3498db;
+  fill: #3498db;
 }
 
 .formation {
@@ -76,6 +78,15 @@ footer {
 }
 .formation .slot.none {
   border: none;
+}
+
+.playground g {
+  transition: 2s;  
+}
+    
+.playground g text {
+  font-size: 0.7em;
+  transform: translateY(0.4vh);
 }
 
 .phases {

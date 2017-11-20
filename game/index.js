@@ -11,16 +11,23 @@ const HeightModifier = 2;
 const BoundaryLength = 200;
 const Columns = 5;
 const Rows = 5;
-const MaxTime = 5;
+const MaxTime = 90;
 const PhaseNames = ['Buildup', 'Consolidation', 'Incision', 'Finishing'];
 
 module.exports = { ...module.exports, MaxSlotPerPhase, MaxPhase, MaxDistancePerPhase, MaxTime, Columns, Rows, PhaseNames };
 
-const getSlotInfo = (slot) => ({
-  phase: Math.floor(slot / MaxSlotPerPhase),
-  x: slot % Columns,
-  y: Math.floor((slot % MaxSlotPerPhase) / Columns)
-});
+const getSlotInfo = (slot, user) => {
+  const ret = {
+    phase: Math.floor(slot / MaxSlotPerPhase),
+    x: slot % Columns,
+    y: Math.floor((slot % MaxSlotPerPhase) / Columns)
+  };
+  if (user === 1) {
+    ret.x = Columns - ret.x - 1;
+    ret.y = Rows - ret.y - 1;
+  }
+  return ret;
+};
 
 const getSlotIfValid = (slot, mod) => {
   const src = getSlotInfo(slot);
@@ -86,13 +93,13 @@ class Formation {
   }
 
   findNewSlot(prevSlot, phase) {
-    return this.findPlayerSlot(this.data[prevSlot]);
+    return this.findPlayerSlot(this.data[prevSlot], phase);
   }
 
   findPlayerSlot(playerid, phase) {
     for (const slot in this.data) {
       const pid = this.data[slot];
-      if (MaxSlotPerPhase * phase <= slot && slot < MaxSlotPerPhase * (phase + 1) && playerid === pid)
+      if (MaxSlotPerPhase * phase <= slot && slot < MaxSlotPerPhase * (phase + 1) && playerid == pid)
         return Number.parseInt(slot);
     }
     return null;
@@ -136,12 +143,13 @@ class Turn {
   }
 
   updateVerticalBoundary(turn, user, phase, distance) {
+    const distanceToGoal = (MaxPhase - phase - 1) * MaxDistancePerPhase - distance;
     if (user === 1) {
-      turn.boundary.bottom = BoundaryLength / 2 - (phase * MaxDistancePerPhase + distance) * BoundaryLength / MaxHeight;
+      turn.boundary.bottom = BoundaryLength / 2 - distanceToGoal * BoundaryLength / MaxHeight;
       turn.boundary.top += turn.boundary.bottom - this.boundary.bottom;
     }
     else {
-      turn.boundary.top = -BoundaryLength / 2 + (phase * MaxDistancePerPhase + distance) * BoundaryLength / MaxHeight;
+      turn.boundary.top = -BoundaryLength / 2 + distanceToGoal * BoundaryLength / MaxHeight;
       turn.boundary.bottom += turn.boundary.top - this.boundary.top;
     }
   }
@@ -150,13 +158,7 @@ class Turn {
     turn.user = user;
     turn.phase = 1;
     turn.distance = 0;
-    turn.boundary = { left: -80, right: 80 };
-    this.updateVerticalBoundary(turn, user, turn.phase, turn.distance);
-    if (user === 1) {
-      turn.boundary.top = -60;
-    } else {
-      turn.boundary.bottom = 60;
-    }
+    turn.boundary = { left: -80, right: 80, top: (turn.user === 1) ? -60 : -20, bottom: (turn.user === 1) ? 20 : 60 };
     const kickoffPlayer = turn.slot = this.formations[user].kickoffPlayer();
 
     const slotWidth = (turn.boundary.right - turn.boundary.left) / Columns;
@@ -165,30 +167,30 @@ class Turn {
 
     for (const playerid of this.formations[0].players) {
       const slot = this.formations[0].findPlayerSlot(playerid, turn.phase);
-      const src = getSlotInfo(slot);
+      const src = getSlotInfo(slot, 0);
       const x = (kickoffPlayer === playerid) ? 0 : Math.floor((src.x - (Columns - 1) / 2) * slotWidth);
       const y = (kickoffPlayer === playerid) ? 0 : Math.floor(src.y * slotHeight / 2);
       turn.positions[0][playerid] = { x, y };
     }
 
     for (const playerid of this.formations[1].players) {
-      const slot = this.formations[1].findPlayerSlot(playerid, this.phase);
-      const src = getSlotInfo(slot);
+      const slot = this.formations[1].findPlayerSlot(playerid, turn.phase);
+      const src = getSlotInfo(slot, 1);
       const x = (kickoffPlayer === playerid) ? 0 : Math.floor((src.x - (Columns - 1) / 2) * slotWidth);
       const y = (kickoffPlayer === playerid) ? 0 : Math.floor(src.y * slotHeight / 2);
       turn.positions[1][playerid] = { x, y };
     }
   }
 
-  calculateNewPositions(turn) {
+  calculateNewPositions(turn, phase) {
     const slotWidth = (this.boundary.right - this.boundary.left) / Columns;
     const slotHeight = (this.boundary.bottom - this.boundary.top) / Rows;
 
     const newPositions = [{}, {}];
     for (const user of [0, 1]) {
       for (const playerid in this.positions[user]) {
-        const slot = this.formations[user].findPlayerSlot(playerid, turn.phase);
-        const src = getSlotInfo(slot);        
+        const slot = this.formations[user].findPlayerSlot(playerid, phase);
+        const src = getSlotInfo(slot, user);        
         const x = Math.floor((src.x - (Columns - 1) / 2) * slotWidth);
         const y = Math.floor((src.y - (Rows - 1) / 2) * slotHeight + HeightModifier * -Math.sign(user - 0.5));
         newPositions[user][playerid] = { x, y };
@@ -274,25 +276,35 @@ class Turn {
       }
     }
 
+    const phase = newTurn.phase || this.phase;
     newTurn.boundary = { ...this.boundary };
     if (newTurn.slot !== undefined && newTurn.user === undefined) {
-      const src = getSlotInfo(this.slot);
-      const dest = getSlotInfo(newTurn.slot);
-      const direction = -Math.sign(newTurn.user - 1) * (dest.x - src.x);
+      const src = getSlotInfo(this.slot, this.user);
+      const dest = getSlotInfo(newTurn.slot, this.user);
+      const direction = -Math.sign(this.user - 1) * (dest.x - src.x);
       if (direction > 0) {
-        newTurn.boundary.right = Math.min(BoundaryLength / 2, newTurn.boundary.right + 6);
-        newTurn.boundary.left = Math.min(-BoundaryLength / 8, newTurn.boundary.left + 3);
+        newTurn.boundary.right = Math.min(BoundaryLength / 2, newTurn.boundary.right + 5);
+        newTurn.boundary.left = Math.min(-BoundaryLength / 8, newTurn.boundary.left + 5);
       } 
       else if (direction < 0) {
-        newTurn.boundary.left = Math.max(-BoundaryLength / 2, newTurn.boundary.left - 6);
-        newTurn.boundary.right = Math.max(BoundaryLength / 8, newTurn.boundary.right - 3);        
+        newTurn.boundary.left = Math.max(-BoundaryLength / 2, newTurn.boundary.left - 5);
+        newTurn.boundary.right = Math.max(BoundaryLength / 8, newTurn.boundary.right - 5);        
       }
     }
     if (newTurn.distance) {
-      const phase = newTurn.phase || this.phase;
       this.updateVerticalBoundary(newTurn, this.user, phase, newTurn.distance);
     }
-    this.calculateNewPositions(newTurn);      
+    newTurn.positions = this.calculateNewPositions(newTurn, phase);
+    if (newTurn.markman) {
+      const opposite = (this.user + 1) % 2;
+      const markmanPlayer = this.formations[opposite].getPlayer(newTurn.markman);
+      const markee = this.formations[this.user].getPlayer(this.slot);
+      const markeePosition = newTurn.positions[this.user][markee];
+      newTurn.positions[opposite][markmanPlayer] = {
+        x: markeePosition.x,
+        y: markeePosition.y + HeightModifier * 2 * Math.sign(this.user - 0.5)
+      }
+    }
     
     for (const param in newTurn) {
       this[param] = newTurn[param];
