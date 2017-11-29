@@ -10,7 +10,7 @@ const matchProxy = require('../proxies/match');
 const squadProxy = require('../proxies/squad');
 const userProxy = require('../proxies/user');
 const staticdata = require('../staticdata');
-const { MaxDistancePerPhase, MaxPhase, MaxTime, PhaseNames } = require('../../game');
+const { MaxPhase, MaxTime, PhaseNames } = require('../../game');
 
 const HomeImage = "https://image.freepik.com/free-icon/worker-in-front-of-a-computer-monitor_318-47857.jpg";
 const SlideShowSeconds = 2;
@@ -107,13 +107,11 @@ module.exports = class extends React.Component {
   async componentWillMount() {
     const match = await matchProxy.make();
     this.setState({ ...this.state, match });
-
-    let prevTurn;
+    
     for (const turn of match.history) {
       await new Promise(resolve => this.timeout = setTimeout(() => resolve(), SlideShowSeconds * 1000));
       console.log('Setting turn', turn);
-      this.setState({ ...this.state, turn, prevTurn });
-      prevTurn = turn;
+      this.setState({ ...this.state, turn });
     }
     await new Promise(resolve => this.timeout = setTimeout(() => resolve(), SlideShowSeconds * 1000));
     console.log('Finalize turn');
@@ -142,7 +140,6 @@ module.exports = class extends React.Component {
         const description = [];
         const formation = squadProxy.convertFormationToArray(turn.user === 1 ? awayFormation : homeFormation, turn.phase);
         const keeper = turn.user === 1 ? awayFormation.GK : homeFormation.GK;
-        const distance = MaxDistancePerPhase * MaxPhase - turn.phase * MaxDistancePerPhase - turn.distance;
 
         children = [
           ...children,
@@ -151,7 +148,7 @@ module.exports = class extends React.Component {
             {Math.floor(SecondsPerTime * turn.time / 60).toLocaleString('en', { minimumIntegerDigits: 2 })}
             :
             {((SecondsPerTime * turn.time) % 60).toLocaleString('en', { minimumIntegerDigits: 2 })}
-            ) -> {distance}m        
+            )
           </div>,
           <Phases key="phases" phase={turn.phase} />,
           <Playground key="playground" turn={turn} prevTurn={prevTurn} matchend={matchend} formations={[homeFormation, awayFormation]} />,

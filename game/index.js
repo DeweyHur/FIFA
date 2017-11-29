@@ -2,31 +2,32 @@ const _ = require('lodash');
 const Actions = require('../views/actions');
 _.keys(Actions).forEach(name => Actions[name] = { ...Actions[name], name });
 
-const KickoffOrder = [2, 1, 3, 7, 6, 8];
 const MaxSlotPerPhase = 25;
 const MaxPhase = 4;
-const MaxDistancePerPhase = 20;
 const MaxHeight = 100;
-const HeightModifier = 2;
 const BoundaryLength = 200;
 const Columns = 5;
 const Rows = 5;
 const MaxTime = 90;
 const PhaseNames = ['Buildup', 'Consolidation', 'Incision', 'Finishing'];
-
-module.exports = { ...module.exports, MaxSlotPerPhase, MaxPhase, MaxDistancePerPhase, MaxTime, Columns, Rows, PhaseNames };
-
+const isWithinPhase = (phase, slot) => phase * MaxSlotPerPhase <= slot && slot < (phase + 1) * MaxSlotPerPhase;
 const getSlotInfo = (slot, user) => {
   const ret = {
     phase: Math.floor(slot / MaxSlotPerPhase),
     x: slot % Columns,
-    y: Math.floor((slot % MaxSlotPerPhase) / Columns)
+    y: Math.floor(slot % MaxSlotPerPhase / Columns)
   };
   if (user === 1) {
     ret.x = Columns - ret.x - 1;
     ret.y = Rows - ret.y - 1;
   }
   return ret;
+};
+
+module.exports = {
+  ...module.exports,
+  MaxSlotPerPhase, MaxPhase, MaxTime, Columns, Rows, PhaseNames,
+  isWithinPhase, getSlotInfo
 };
 
 const getSlotIfValid = (slot, mod) => {
@@ -43,7 +44,7 @@ const getSlotIfValid = (slot, mod) => {
 const getOpponentSlot = (slot) => MaxSlotPerPhase * MaxPhase - 1 - slot;
 
 /**
- * 
+ *
  * @param {*} array [ ...[value, weight] ]
  */
 const sampleWithWeight = (array) => {
@@ -53,12 +54,12 @@ const sampleWithWeight = (array) => {
     if (weight === 0) return slot;
   }
   const picked = _.random(0, totalWeight - 1, false);
-  let count = 0;
   for (const [slot, weight] of array) {
     totalWeight -= weight;
     if (totalWeight <= picked) return slot;
   }
-  console.error("WTF?!");
+  console.error('WTF?!');
+  throw 'WTF?!';
 }
 
 const findMarkman = (slot, opponentFormation, exempt) => {
@@ -70,7 +71,7 @@ const findMarkman = (slot, opponentFormation, exempt) => {
   const getRelatives = (samples) => {
     let relatives = samples
       .map(mod => getSlotIfValid(opponentSlot, mod))
-      .filter(slot => slot && slot !== exempt && opponentFormation.getPlayer(slot));
+      .filter(x => x && x !== exempt && opponentFormation.getPlayer(x));
     if (!_.isEmpty(relatives)) return _.sample(relatives);
   }
 
@@ -78,7 +79,7 @@ const findMarkman = (slot, opponentFormation, exempt) => {
     getRelatives([[-2, 0], [-1, -1], [0, -2], [1, -1], [2, 0], [1, 1], [0, 2]]) ||
     _(opponentFormation.data)
       .keys()
-      .filter(slot => MaxSlotPerPhase * phase <= slot && slot < MaxSlotPerPhase * (phase + 1))
+      .filter(x => MaxSlotPerPhase * phase <= x && x < MaxSlotPerPhase * (phase + 1))
       .sample();
 }
 
@@ -97,12 +98,8 @@ class Formation {
   }
 
   findPlayerSlot(playerid, phase) {
-    for (const slot in this.data) {
-      const pid = this.data[slot];
-      if (MaxSlotPerPhase * phase <= slot && slot < MaxSlotPerPhase * (phase + 1) && playerid == pid)
-        return Number.parseInt(slot);
-    }
-    return null;
+    const playerSlot = _.findKey(this.data, (pid, slot) => isWithinPhase(phase, slot) && playerid === pid);
+    return Number.parseInt(playerSlot, 10);
   }
 
   kickoffPlayer() {
@@ -114,14 +111,14 @@ class Formation {
       const src = getSlotInfo(slot);
       return action.relatives
         .map(mod => [getSlotIfValid(slot, mod), mod[2]])
-        .filter(([slot, w]) => slot && this.getPlayer(slot));
-    }
-    else if (action.absolutes) {
+        .filter(([x, w]) => x && this.getPlayer(x));
+
+    } else if (action.absolutes) {
       return action.absolutes
-        .map(([slot, w]) => [slot + phase * MaxSlotPerPhase, w])
-        .filter(([slot, w]) => slot && this.getPlayer(slot));
-    }
-    else {
+        .map(([x, w]) => [x + phase * MaxSlotPerPhase, w])
+        .filter(([x, w]) => x && this.getPlayer(x));
+
+    } else {
       return null;
     }
   }
@@ -132,6 +129,7 @@ class Turn {
     this.formations = [new Formation(homeFormation), new Formation(awayFormation)];
     this.scores = [0, 0];
     this.setupKickoff(this, 0);
+
     /**
      * kickoff|keep|aerial|shooting|keeper|throwing|corner(todo)|linebreaking(todo)
      */
@@ -139,71 +137,20 @@ class Turn {
   }
 
   toObject() {
-    return _.pick(this, ['user', 'phase', 'distance', 'slot', 'action', 'status', 'markman', 'scores', 'boundary', 'positions']);
-  }
-
-  updateVerticalBoundary(turn, user, phase, distance) {
-    const distanceToGoal = (MaxPhase - phase - 1) * MaxDistancePerPhase - distance;
-    if (user === 1) {
-      turn.boundary.bottom = BoundaryLength / 2 - distanceToGoal * BoundaryLength / MaxHeight;
-      turn.boundary.top += turn.boundary.bottom - this.boundary.bottom;
-    }
-    else {
-      turn.boundary.top = -BoundaryLength / 2 + distanceToGoal * BoundaryLength / MaxHeight;
-      turn.boundary.bottom += turn.boundary.top - this.boundary.top;
-    }
+    return _.pick(this, ['user', 'phase', 'slot', 'action', 'status', 'markman', 'scores', 'boundary']);
   }
 
   setupKickoff(turn, user) {
     turn.user = user;
     turn.phase = 1;
-    turn.distance = 0;
-    turn.boundary = { left: -80, right: 80, top: (turn.user === 1) ? -60 : -20, bottom: (turn.user === 1) ? 20 : 60 };
-    const kickoffPlayer = turn.slot = this.formations[user].kickoffPlayer();
-
-    const slotWidth = (turn.boundary.right - turn.boundary.left) / Columns;
-    const slotHeight = (turn.boundary.bottom - turn.boundary.top) / Rows;
-    turn.positions = [{}, {}];
-
-    for (const playerid of this.formations[0].players) {
-      const slot = this.formations[0].findPlayerSlot(playerid, turn.phase);
-      const src = getSlotInfo(slot, 0);
-      const x = (kickoffPlayer === playerid) ? 0 : Math.floor((src.x - (Columns - 1) / 2) * slotWidth);
-      const y = (kickoffPlayer === playerid) ? 0 : Math.floor(src.y * slotHeight / 2);
-      turn.positions[0][playerid] = { x, y };
-    }
-
-    for (const playerid of this.formations[1].players) {
-      const slot = this.formations[1].findPlayerSlot(playerid, turn.phase);
-      const src = getSlotInfo(slot, 1);
-      const x = (kickoffPlayer === playerid) ? 0 : Math.floor((src.x - (Columns - 1) / 2) * slotWidth);
-      const y = (kickoffPlayer === playerid) ? 0 : Math.floor(src.y * slotHeight / 2);
-      turn.positions[1][playerid] = { x, y };
-    }
-  }
-
-  calculateNewPositions(turn, phase) {
-    const slotWidth = (this.boundary.right - this.boundary.left) / Columns;
-    const slotHeight = (this.boundary.bottom - this.boundary.top) / Rows;
-
-    const newPositions = [{}, {}];
-    for (const user of [0, 1]) {
-      for (const playerid in this.positions[user]) {
-        const slot = this.formations[user].findPlayerSlot(playerid, phase);
-        const src = getSlotInfo(slot, user);        
-        const x = Math.floor((src.x - (Columns - 1) / 2) * slotWidth);
-        const y = Math.floor((src.y - (Rows - 1) / 2) * slotHeight + HeightModifier * -Math.sign(user - 0.5));
-        newPositions[user][playerid] = { x, y };
-      }
-    }
-    return newPositions;
+    turn.boundary = { x: 0, y: user === 1 ? -20 : 20, h: 80, v: 60 };
+    turn.slot = this.formations[user].kickoffPlayer();
   }
 
   turnover() {
     return {
       phase: MaxPhase - this.phase - 1,
       user: (this.user + 1) % 2,
-      distance: MaxDistancePerPhase - this.distance
     };
   }
 
@@ -218,7 +165,7 @@ class Turn {
     if (/kickoff|keeper|turnover/.test(action.to)) {
       newTurn = { ...newTurn, ...this.turnover() }
       switch (action.to) {
-        case 'keeper': delete this.slot; break;
+        case 'keeper': Reflect.delete(this.slot); break;
         case 'turnover': newTurn.slot = newTurn.markman; break;
         case 'kickoff':
           this.setupKickoff(newTurn, newTurn.user);
@@ -226,18 +173,12 @@ class Turn {
           newTurn.scores[this.user] = newTurn.scores[this.user] + 1;
           break;
       }
-    }
-    else {
-      let targets;
-      if (/aerial/.test(action.to)) {
-        targets = [
-          ...this.formations[this.user].targets(this.slot, this.phase, action),
-          ...this.formations[(this.user + 1) % 2].targets(-getOpponentSlot(this.slot) - 1, MaxPhase - 1 - this.phase, action)
-        ];
-      }
-      else {
-        targets = this.formations[this.user].targets(this.slot, this.phase, action);
-      }
+    } else {
+      const targets = (/aerial/).test(action.to) ? [
+        ...this.formations[this.user].targets(this.slot, this.phase, action),
+        ...this.formations[(this.user + 1) % 2].targets(-getOpponentSlot(this.slot) - 1, MaxPhase - 1 - this.phase, action)
+      ] : this.formations[this.user].targets(this.slot, this.phase, action);
+
       if (targets) {
         if (targets.length === 0) return false;
         newTurn.slot = sampleWithWeight(targets);
@@ -247,65 +188,28 @@ class Turn {
         newTurn = { ...newTurn, ...newTurn.turnover() };
       }
 
+      newTurn.boundary = { ...this.boundary };
       if (action.distance) {
-        newTurn.distance = this.distance + action.distance;
-        if (newTurn.distance < 0) {
-          if (this.phase > 0) {
-            newTurn.phase = this.phase - 1;
-            newTurn.distance += MaxDistancePerPhase;
-          }
-          else {
-            newTurn.distance = 0;
-          }
-        }
-        else if (newTurn.distance > MaxDistancePerPhase) {
-          if (this.phase < MaxPhase - 1) {
-            newTurn.phase = this.phase + 1;
-            newTurn.distance -= MaxDistancePerPhase;
-          }
-          else {
-            newTurn.distance = MaxDistancePerPhase;
-          }
-        }
+        const user = newTurn.user || this.user;
+        newTurn.boundary.y += Math.sign(user - 0.5) * action.distance;
+        newTurn.boundary.y = Math.min(Math.max(-BoundaryLength / 2, newTurn.boundary.y), BoundaryLength);
+        newTurn.phase = _.findIndex([-50, 0, 50, 100], line => newTurn.boundary.y * Math.sign(this.user - 0.5) < line);
       }
 
-      if (newTurn.user == null && newTurn.phase && newTurn.phase !== this.phase) {
+      if (newTurn.user === undefined && newTurn.phase && newTurn.phase !== this.phase) {
         const phase = newTurn.phase || this.phase;
         const slot = newTurn.slot || this.slot;
         newTurn.slot = this.formations[this.user].findNewSlot(slot, phase);
       }
     }
 
-    const phase = newTurn.phase || this.phase;
-    newTurn.boundary = { ...this.boundary };
     if (newTurn.slot !== undefined && newTurn.user === undefined) {
       const src = getSlotInfo(this.slot, this.user);
       const dest = getSlotInfo(newTurn.slot, this.user);
       const direction = -Math.sign(this.user - 1) * (dest.x - src.x);
-      if (direction > 0) {
-        newTurn.boundary.right = Math.min(BoundaryLength / 2, newTurn.boundary.right + 5);
-        newTurn.boundary.left = Math.min(-BoundaryLength / 8, newTurn.boundary.left + 5);
-      } 
-      else if (direction < 0) {
-        newTurn.boundary.left = Math.max(-BoundaryLength / 2, newTurn.boundary.left - 5);
-        newTurn.boundary.right = Math.max(BoundaryLength / 8, newTurn.boundary.right - 5);        
-      }
+      newTurn.boundary.x += direction * 5;
     }
-    if (newTurn.distance) {
-      this.updateVerticalBoundary(newTurn, this.user, phase, newTurn.distance);
-    }
-    newTurn.positions = this.calculateNewPositions(newTurn, phase);
-    if (newTurn.markman) {
-      const opposite = (this.user + 1) % 2;
-      const markmanPlayer = this.formations[opposite].getPlayer(newTurn.markman);
-      const markee = this.formations[this.user].getPlayer(this.slot);
-      const markeePosition = newTurn.positions[this.user][markee];
-      newTurn.positions[opposite][markmanPlayer] = {
-        x: markeePosition.x,
-        y: markeePosition.y + HeightModifier * 2 * Math.sign(this.user - 0.5)
-      }
-    }
-    
+
     for (const param in newTurn) {
       this[param] = newTurn[param];
     }
@@ -320,16 +224,11 @@ module.exports.evaluate = (homeFormation, awayFormation) => {
   const history = [record];
 
   while (time < MaxTime || turn.phase === MaxPhase - 1) {
-    const actions = _.values(Actions).filter(action => {
-      return action.status.some(item => item === turn.status) &&
-        (!action.phase || action.phase === turn.phase) &&
-        (!action.constraint || action.constraint.some(available => {
-          return available === turn.slot % MaxSlotPerPhase;
-        }));
-    });
+    const actions = _.values(Actions).filter(action => action.status.some(item => item === turn.status) &&
+      (!action.phase || action.phase === turn.phase) &&
+      (!action.constraint || action.constraint.some(available => available === turn.slot % MaxSlotPerPhase)));
     const nextAction = _.sample(actions);
-    if (/shooting|keeper/.test(turn.status))
-      console.log("time", time, "phase", turn.phase, "slot", turn.slot, "action", nextAction.name);
+    if (/shooting|keeper/.test(turn.status)) console.log('time', time, 'phase', turn.phase, 'slot', turn.slot, 'action', nextAction.name);
     if (!turn.validateAndDo(nextAction)) continue;
     record = { time: time++, ...turn.toObject() }
     history.push(record);
