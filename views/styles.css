@@ -82,11 +82,17 @@ footer {
 
 .playground g {
   transition: 2s;  
-}
-    
+}    
 .playground g text {
   font-size: 0.7em;
   transform: translateY(0.4vh);
+}
+.playground .ball {
+  fill: yellow;  
+}    
+.playground rect {
+  fill: none;
+  stroke: black;
 }
 
 .phases {

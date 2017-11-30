@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const React = require('react');
 const staticdata = require('../staticdata');
-const { Columns, Rows, MaxPhase, isWithinPhase, getSlotInfo } = require('../../game');
+const { Columns, Rows, MaxPhase, isWithinPhase, getSlotInfo, BoundaryLength } = require('../../game');
 
 const AspectRatio = 1.5;
 const HeightModifier = 2;
@@ -69,25 +69,36 @@ module.exports = class extends React.Component {
     const { turn, formations } = this.props;
 
     const positions = calcPositions(turn, formations);
-    const children = positions.map(props => {
-      const { x, y, user, player } = props;
-      return (
-        <g id={`${user}_${player.playerid}`}>
-          <circle className={user === 1 ? 'awayteam' : 'hometeam'} cx={x} cy={y * AspectRatio} r="5" />
-          <text x={x} y={y * AspectRatio} textAnchor="middle">{player.number}</text>
-        </g>
-      );
-    });
+    let children = [
+      <rect key="boundary" className="boundary"
+        x={turn.boundary.x - turn.boundary.h}
+        y={(turn.boundary.y - turn.boundary.v) * 2}
+        width={turn.boundary.h * 2}
+        height={turn.boundary.v * 2 * 2}
+      />,
+      ...positions.map(props => {
+        const { x, y, user, player } = props;
+        const key = `${user}_${player.playerid}`;
+        return (
+          <g key={key}>
+            <circle className={user === 1 ? 'awayteam' : 'hometeam'} cx={x} cy={y * AspectRatio} r="5" />
+            <text x={x} y={y * AspectRatio} textAnchor="middle">{player.number}</text>
+          </g>
+        );
+      })
+    ];
 
+    const holder = _.find(positions, { slot: turn.slot, user: turn.user });
+    const ball = holder
+      ? { x: holder.x, y: holder.y + Math.sign(turn.user - 0.5) * 3 }
+      : { x: 0, y: Math.sign(turn.user - 0.5) * (BoundaryLength * 0.5 + 3) };
+    children = [
+      ...children,
+      <circle key="ball" className="ball" cx={ball.x} cy={ball.y * AspectRatio} r="3" />
+    ];
 
     return (
       <svg className="playground" viewBox="-100 -150 200 300">
-        <rect id="boundary"
-          x={turn.boundary.x - turn.boundary.h}
-          y={(turn.boundary.y - turn.boundary.h) * 2}
-          width={turn.boundary.h * 2}
-          height={turn.boundary.v * 2 * 2}
-        />
         {children}
       </svg>
     );
