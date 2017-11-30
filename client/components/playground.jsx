@@ -6,77 +6,75 @@ const { Columns, Rows, MaxPhase, isWithinPhase, getSlotInfo } = require('../../g
 const AspectRatio = 1.5;
 const HeightModifier = 2;
 
-module.exports = class extends React.Component {
+const calcPositions = (turn, formations) => {
+  const { boundary } = turn;
+  const district = { w: boundary.h * 2 / Columns, h: boundary.v * 2 / Rows };
+  if (/kickoff/.test(turn.status)) {
+    return _.flatMap([0, 1], user => _(formations[user])
+      .keys()
+      .map(slot => Number.parseInt(slot, 10))
+      .filter(slot => isWithinPhase(1, slot))
+      .map(slot => {
+        const src = getSlotInfo(slot, user);
+        const x = turn.slot === slot ? 0 : boundary.x + Math.floor((src.x - (Columns - 1) * 0.5) * district.w) + (Math.random() - 0.5) * district.w * 0.5;
+        const y = turn.slot === slot ? 0 : boundary.y + Math.floor(src.y * district.h / Rows * 0.5) * -Math.sign(user - 0.5) + (Math.random() - 0.5) * district.h * 0.5;
+        const player = staticdata.players[formations[user][slot]];
+        return { x, y, slot, user, player };
+      })
+      .value()
+    );
 
-  calcPositions(turn, formations) {
-    if (/kickoff/.test(turn.status)) {
-      const { boundary } = turn;
-      return _.flatMap([0, 1], user => _(formations[user])
+  } else {
+    const calcCoord = (slot, user) => {
+      const src = getSlotInfo(slot, user);
+      const x = boundary.x + Math.floor((src.x - (Columns - 1) * 0.5) * district.w) + (Math.random() - 0.5) * district.w * 0.5;
+      const y = boundary.y + Math.floor((src.y - (Rows - 1) * 0.5) * district.h + HeightModifier * -Math.sign(user - 0.5)) + (Math.random() - 0.5) * district.h * 0.5;
+      return { x, y };
+    }
+
+    const positions = _.flatMap([0, 1], user => {
+      const phase = turn.user === user ? turn.phase : MaxPhase - turn.phase - 1;
+      return _(formations[user])
         .keys()
         .map(slot => Number.parseInt(slot, 10))
-        .filter(slot => isWithinPhase(1, slot))
-        .map(slot => {
-          const src = getSlotInfo(slot, user);
-          const x = turn.slot === slot ? 0 : Math.floor((src.x - (Columns - 1) / 2) * boundary.h);
-          const y = turn.slot === slot ? 0 : Math.floor(src.y * boundary.v / 2) * -Math.sign(user - 0.5);
-          const player = staticdata.players[formations[user][slot]];
-          return { x, y, slot, user, player };
-        })
-        .value()
-      );
+        .filter(slot => isWithinPhase(phase, slot))
+        .map(slot => ({
+          ...calcCoord(slot, user),
+          slot,
+          user,
+          player: staticdata.players[formations[user][slot]]
+        }))
+        .value();
+    });
 
-    } else {
-      const { boundary } = turn;
-      const calcCoord = (slot, user) => {
-        const src = getSlotInfo(slot, user);
-        const x = Math.floor((src.x - (Columns - 1) / 2) * boundary.h);
-        const y = Math.floor((src.y - (Rows - 1) / 2) * boundary.v + HeightModifier * -Math.sign(user - 0.5));
-        return { x, y };
-      }
+    // if (turn.markman) {
+    //   const user = (turn.user + 1) % 2;
+    //   const markmanIndex = _.findIndex(positions, { user, slot: turn.markman });
+    //   if (markmanIndex !== -1) {
+    //     const markee = _.find(positions, { user: turn.user, slot: turn.slot });
+    //     positions[markmanIndex] = {
+    //       ...positions[markmanIndex],
+    //       x: markee.x,
+    //       y: markee.y + HeightModifier * 2 * Math.sign(user - 0.5)
+    //     };
+    //   }
+    // }
 
-      const positions = _.flatMap([0, 1], user => {
-        const phase = turn.user === user ? turn.phase : MaxPhase - turn.phase - 1;
-        return _(formations[user])
-          .keys()
-          .map(slot => Number.parseInt(slot, 10))
-          .filter(slot => isWithinPhase(phase, slot))
-          .map(slot => ({
-            ...calcCoord(slot, user),
-            slot,
-            user,
-            player: staticdata.players[formations[user][slot]]
-          }))
-          .value();
-      });
-
-      if (turn.markman) {
-        const user = (turn.user + 1) % 2;
-        const markmanIndex = _.findIndex(positions, { user, slot: turn.markman });
-        if (markmanIndex !== -1) {
-          const markee = _.find(positions, { user: turn.user, slot: turn.slot });
-          positions[markmanIndex] = {
-            ...positions[markmanIndex],
-            x: markee.x,
-            y: markee.y + HeightModifier * 2 * Math.sign(this.user - 0.5)
-          };
-        }
-      }
-
-      return positions;
-    }
+    return positions;
   }
+}
 
+module.exports = class extends React.Component {
   render() {
     const { turn, formations } = this.props;
 
-    const positions = this.calcPositions(turn, formations);
+    const positions = calcPositions(turn, formations);
     const children = positions.map(props => {
       const { x, y, user, player } = props;
-      const style = { transform: `translate(${x / 2.5}vw, ${y / 2.5 * AspectRatio}vw)` };
       return (
-        <g id={`${user}_${player.playerid}`} style={style}>
-          <circle className={user === 1 ? 'awayteam' : 'hometeam'} cx={0} cy={0} r="7" />
-          <text x={0} y={0} textAnchor="middle">{player.number}</text>
+        <g id={`${user}_${player.playerid}`}>
+          <circle className={user === 1 ? 'awayteam' : 'hometeam'} cx={x} cy={y * AspectRatio} r="5" />
+          <text x={x} y={y * AspectRatio} textAnchor="middle">{player.number}</text>
         </g>
       );
     });
@@ -87,8 +85,8 @@ module.exports = class extends React.Component {
         <rect id="boundary"
           x={turn.boundary.x - turn.boundary.h}
           y={(turn.boundary.y - turn.boundary.h) * 2}
-          rx={turn.boundary.h * 2}
-          ry={turn.boundary.v * 2 * 2}
+          width={turn.boundary.h * 2}
+          height={turn.boundary.v * 2 * 2}
         />
         {children}
       </svg>
