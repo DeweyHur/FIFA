@@ -4,7 +4,6 @@ _.keys(Actions).forEach(name => Actions[name] = { ...Actions[name], name });
 
 const MaxSlotPerPhase = 25;
 const MaxPhase = 4;
-const MaxHeight = 100;
 const BoundaryLength = 200;
 const Columns = 5;
 const Rows = 5;
@@ -26,7 +25,7 @@ const getSlotInfo = (slot, user) => {
 
 module.exports = {
   ...module.exports,
-  MaxSlotPerPhase, MaxPhase, MaxTime, Columns, Rows, PhaseNames,
+  MaxSlotPerPhase, MaxPhase, MaxTime, Columns, Rows, PhaseNames, BoundaryLength,
   isWithinPhase, getSlotInfo
 };
 

@@ -16,8 +16,8 @@ const calcPositions = (turn, formations) => {
       .filter(slot => isWithinPhase(1, slot))
       .map(slot => {
         const src = getSlotInfo(slot, user);
-        const x = turn.slot === slot ? 0 : boundary.x + Math.floor((src.x - (Columns - 1) * 0.5) * district.w) + (Math.random() - 0.5) * district.w * 0.5;
-        const y = turn.slot === slot ? 0 : boundary.y + Math.floor(src.y * district.h / Rows * 0.5) * -Math.sign(user - 0.5) + (Math.random() - 0.5) * district.h * 0.5;
+        const x = turn.slot === slot ? 0 : boundary.x + Math.floor((src.x - (Columns - 1) * 0.5) * district.w);
+        const y = turn.slot === slot ? 0 : boundary.y + Math.floor(src.y * district.h * 0.5) * -Math.sign(user - 0.5);
         const player = staticdata.players[formations[user][slot]];
         return { x, y, slot, user, player };
       })
@@ -85,8 +85,16 @@ module.exports = class extends React.Component {
             <text x={x} y={y * AspectRatio} textAnchor="middle">{player.number}</text>
           </g>
         );
-      })
-    ];
+      }),
+      <g key="homeGK">
+        <circle className="hometeam" cx={0} cy={BoundaryLength * 0.5 * AspectRatio - 5} r="5" />
+        <text x={0} y={BoundaryLength * 0.5 * AspectRatio - 5} textAnchor="middle">GK</text>
+      </g>,
+      <g key="awayGK">
+        <circle className="awayteam" cx={0} cy={-BoundaryLength * 0.5 * AspectRatio + 5} r="5" />
+        <text x={0} y={-BoundaryLength * 0.5 * AspectRatio + 5} textAnchor="middle">GK</text>
+      </g>
+  ];
 
     const holder = _.find(positions, { slot: turn.slot, user: turn.user });
     const ball = holder
