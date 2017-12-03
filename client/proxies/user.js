@@ -36,7 +36,7 @@ class UserProxy extends Proxy {
       this.assign({
         myid: undefined
       });
-      Reflect.delete(this.me);
+      Reflect.deleteProperty(this.me);
       return null;
     }
   }

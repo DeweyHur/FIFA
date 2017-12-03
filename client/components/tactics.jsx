@@ -16,7 +16,7 @@ module.exports = class extends React.Component {
   }
 
   render() {
-    const { user, formation, keeper, ball, editable } = this.props;
+    const { user, formation, keeper, ball } = this.props;
     const phase = _.get(this.state, 'phase') || _.get(this.props, 'phase');
 
     return (
@@ -26,4 +26,4 @@ module.exports = class extends React.Component {
       </div>
     );
   }
-}; 
+}

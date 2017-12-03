@@ -114,7 +114,7 @@ module.exports = {
         "newline-after-var": "off",
         "newline-before-return": "off",
         "newline-per-chained-call": "off",
-        "no-alert": "error",
+        "no-alert": "off",
         "no-array-constructor": "error",
         "no-await-in-loop": "off",
         "no-bitwise": "error",

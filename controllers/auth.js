@@ -2,7 +2,6 @@ let _ = require('lodash');
 let passport = require('passport');
 let GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 let FacebookStrategy = require('passport-facebook');
-let mongoose = require('mongoose');
 let config = require('../config');
 let userController = require('./user');
 

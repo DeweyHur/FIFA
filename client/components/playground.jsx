@@ -5,6 +5,7 @@ const { Columns, Rows, MaxPhase, isWithinPhase, getSlotInfo, BoundaryLength } = 
 
 const AspectRatio = 1.5;
 const HeightModifier = 2;
+const SlideShowSeconds = 2;
 
 const calcPositions = (turn, formations) => {
   const { boundary } = turn;
@@ -76,13 +77,21 @@ module.exports = class extends React.Component {
         width={turn.boundary.h * 2}
         height={turn.boundary.v * 2 * 2}
       />,
-      ...positions.map(props => {
+      ...positions.map((props, index) => {
+        const prevProps = this.positions ? this.positions[index] : {};
         const { x, y, user, player } = props;
         const key = `${user}_${player.playerid}`;
         return (
           <g key={key}>
-            <circle className={user === 1 ? 'awayteam' : 'hometeam'} cx={x} cy={y * AspectRatio} r="5" />
-            <text x={x} y={y * AspectRatio} textAnchor="middle">{player.number}</text>
+            <circle className={user === 1 ? 'awayteam' : 'hometeam'} cx={x} cy={y * AspectRatio} r="5">
+              <animate attributeName="cx" from={prevProps.x} to={x} dur={`${SlideShowSeconds}s`} repeatCount="infinite" />
+              <animate attributeName="cy" from={prevProps.y * AspectRatio} to={y * AspectRatio} dur={`${SlideShowSeconds}s`} repeatCount="infinite" />
+            </circle>
+            <text x={x} y={y * AspectRatio} textAnchor="middle">
+              <animate attributeName="x" from={prevProps.x} to={x} dur={`${SlideShowSeconds}s`} repeatCount="infinite" />
+              <animate attributeName="y" from={prevProps.y * AspectRatio} to={y * AspectRatio} dur={`${SlideShowSeconds}s`} repeatCount="infinite" />
+              {player.number}
+            </text>
           </g>
         );
       }),
@@ -94,7 +103,7 @@ module.exports = class extends React.Component {
         <circle className="awayteam" cx={0} cy={-BoundaryLength * 0.5 * AspectRatio + 5} r="5" />
         <text x={0} y={-BoundaryLength * 0.5 * AspectRatio + 5} textAnchor="middle">GK</text>
       </g>
-  ];
+    ];
 
     const holder = _.find(positions, { slot: turn.slot, user: turn.user });
     const ball = holder
@@ -102,9 +111,11 @@ module.exports = class extends React.Component {
       : { x: 0, y: Math.sign(turn.user - 0.5) * (BoundaryLength * 0.5 + 3) };
     children = [
       ...children,
-      <circle key="ball" className="ball" cx={ball.x} cy={ball.y * AspectRatio} r="3" />
+      <circle key="ball" className="ball" cx={ball.x} cy={ball.y * AspectRatio} r="3">
+      </circle>
     ];
 
+    this.positions = positions;
     return (
       <svg className="playground" viewBox="-100 -150 200 300">
         {children}

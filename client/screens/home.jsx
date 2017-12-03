@@ -1,4 +1,3 @@
-const Papa = require('papaparse');
 const React = require('react');
 const nav = require('../components/nav.jsx');
 const Tactics = require('../components/tactics.jsx');

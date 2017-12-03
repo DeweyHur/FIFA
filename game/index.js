@@ -107,15 +107,14 @@ class Formation {
 
   targets(slot, phase, action) {
     if (action.relatives) {
-      const src = getSlotInfo(slot);
       return action.relatives
         .map(mod => [getSlotIfValid(slot, mod), mod[2]])
-        .filter(([x, w]) => x && this.getPlayer(x));
+        .filter(([x]) => x && this.getPlayer(x));
 
     } else if (action.absolutes) {
       return action.absolutes
         .map(([x, w]) => [x + phase * MaxSlotPerPhase, w])
-        .filter(([x, w]) => x && this.getPlayer(x));
+        .filter(([x]) => x && this.getPlayer(x));
 
     } else {
       return null;
@@ -164,7 +163,7 @@ class Turn {
     if (/kickoff|keeper|turnover/.test(action.to)) {
       newTurn = { ...newTurn, ...this.turnover() }
       switch (action.to) {
-        case 'keeper': Reflect.delete(this.slot); break;
+        case 'keeper': Reflect.deleteProperty(this.slot); break;
         case 'turnover': newTurn.slot = newTurn.markman; break;
         case 'kickoff':
           this.setupKickoff(newTurn, newTurn.user);

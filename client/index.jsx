@@ -3,7 +3,7 @@ const squadProxy = require('./proxies/squad');
 const userProxy = require('./proxies/user');
 const staticdata = require('./staticdata');
 
-(async (screen) => {
+(async () => {
   try {
     const data = await staticdata.fetch();
     console.log('Fetched staticdata', data);

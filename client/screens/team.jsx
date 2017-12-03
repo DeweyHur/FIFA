@@ -1,6 +1,5 @@
-const Papa = require('papaparse');
+const _ = require('lodash');
 const React = require('react');
-const userProxy = require('../proxies/user');
 const squadProxy = require('../proxies/squad');
 const nav = require('../components/nav.jsx');
 const staticdata = require('../staticdata');
@@ -23,19 +22,20 @@ class Team extends React.Component {
       <div key="name">{team.name}</div>
     ];
     if (selected) {
-      children = [...children,
-      <div key="attributes" className="teamattributes">
-        <span className="att">{team.att}</span> |&nbsp;
+      children = [
+        ...children,
+        <div key="attributes" className="teamattributes">
+          <span className="att">{team.att}</span> |&nbsp;
           <span className="mid">{team.mid}</span> |&nbsp;
           <span className="def">{team.def}</span>
-      </div>,
-      <img key="choose" className="getit" src={GetItImage} onClick={async () => {
-        if (confirm(`Do you want to own ${team.name}?`)) {
-          const mysquad = await squadProxy.setTeam(team.id);
-          console.log('Team Selected!', team.name, team.id, mysquad);
-          nav.go('home');
-        }
-      }} />
+        </div>,
+        <img key="choose" className="getit" src={GetItImage} onClick={async () => {
+          if (confirm(`Do you want to own ${team.name}?`)) {
+            const mysquad = await squadProxy.setTeam(team.id);
+            console.log('Team Selected!', team.name, team.id, mysquad);
+            nav.go('home');
+          }
+        }} />
       ];
     }
 
@@ -60,7 +60,7 @@ module.exports = class extends React.Component {
   handleChildClick(item) {
     if (this.currentFocus) {
       this.currentFocus.setState({ ...this.state, selected: undefined });
-      delete this.currentFocus;
+      Reflect.deleteProperty(this.currentFocus);
     }
     this.currentFocus = item;
 

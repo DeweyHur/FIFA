@@ -1,7 +1,4 @@
-const Papa = require('papaparse');
 const React = require('react');
-const userProxy = require('../proxies/user');
-const squadProxy = require('../proxies/squad');
 const nav = require('../components/nav.jsx');
 
 class Slot extends React.Component {
@@ -40,15 +37,13 @@ module.exports = class extends React.Component {
   constructor(props) {
     super(props);
     this.handleChildClick = this.handleChildClick.bind(this);
-
-    const squad = squadProxy.cache.data[userProxy.cache.myid];
     this.state = { };
   }
 
   handleChildClick(item) {
     if (this.currentFocus) {
       this.currentFocus.setState({ ...this.state, selected: undefined });
-      Reflect.delete(this.currentFocus);
+      Reflect.deleteProperty(this.currentFocus);
     }
     this.currentFocus = item;
   }
@@ -60,7 +55,7 @@ module.exports = class extends React.Component {
     return (
       <section id="formation">
         {formation[selectedIndex].map((slot, index) => {
-          return <Slot key={`${selectedIndex}.${index}`} addible={formation} index={index} slot={slot} onClick={this.handleChildClick} />;
+          return <Slot key={`${selectedIndex}.${index}`} addible={addible} index={index} slot={slot} onClick={this.handleChildClick} />;
         })}
       </section>
     );

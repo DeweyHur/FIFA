@@ -79,8 +79,8 @@ const Description = (props) => {
           );
         }
       }
-    }
-    else {
+
+    } else {
       description.push(
         <p key="kickoff">
           KickOff! &nbsp;
@@ -105,7 +105,7 @@ module.exports = class extends React.Component {
   async componentWillMount() {
     const match = await matchProxy.make();
     this.setState({ ...this.state, match });
-    
+
     let prevTurn = null;
     for (const turn of match.history) {
       await new Promise(resolve => this.timeout = setTimeout(() => resolve(), SlideShowSeconds * 1000));

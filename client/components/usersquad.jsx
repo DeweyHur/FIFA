@@ -1,6 +1,5 @@
 const React = require('react');
 const Loader = require('./loader.jsx');
-const squadProxy = require('../proxies/squad');
 const userProxy = require('../proxies/user');
 const staticdata = require('../staticdata');
 
