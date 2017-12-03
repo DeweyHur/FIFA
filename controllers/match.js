@@ -4,7 +4,7 @@ const Match = require('../models/match');
 const Squad = require('../models/squad');
 const Game = require('../game');
 
-exports.make = async (req, res) => {
+module.exports.make = async (req, res) => {
   const homeUserId = _.get(req, 'user._id');
   const home = await Squad.findById(homeUserId);
 
@@ -23,8 +23,8 @@ exports.make = async (req, res) => {
     });
     match.markModified('homeFormation');
     match.markModified('awayFormation');
-    
-    const results = await match.save();
+
+    await match.save();
     const serialized = match.toObject();
     console.log('match done.');
 

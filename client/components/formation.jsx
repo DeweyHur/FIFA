@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const React = require('react');
 const Player = require('./player.jsx');
 const staticdata = require('../staticdata');
@@ -10,13 +11,13 @@ class Slot extends React.Component {
   }
 
   render() {
-    const { user, ball, slot, playerid, onClick } = this.props;
+    const { user, ball, playerid } = this.props;
     const image = `https://cdn.sofifa.org/18/players/${playerid}.png`;
-    const classes = ["slot"];
+    const classes = ['slot'];
     if (playerid) {
       const player = staticdata.players[playerid];
-      classes.push("occupied");
-      if (ball) classes.push("ball");
+      classes.push('occupied');
+      if (ball) classes.push('ball');
       return (
         <div className={classes.join(' ')} onMouseOver={() => {
           // nav.go('playerlist', { slot, index });
@@ -28,16 +29,16 @@ class Slot extends React.Component {
       );
 
     } else {
-      classes.push("empty");
+      classes.push('empty');
       return (
-        <div className={classes.join(" ")}>
+        <div className={classes.join(' ')}>
         </div>
       );
     }
   }
 }
 
-const NonSlot = (props) => {
+const NonSlot = () => {
   return (
     <div className="slot none">
     </div>
@@ -53,7 +54,7 @@ module.exports = class extends React.Component {
   handleChildClick(item) {
     if (this.currentFocus) {
       this.currentFocus.setState({ ...this.state, selected: undefined });
-      delete this.currentFocus;
+      Reflect.delete(this.currentFocus);
     }
     this.currentFocus = item;
   }
@@ -72,9 +73,9 @@ module.exports = class extends React.Component {
     ];
     const GKSlot = <Slot key="GK" user={user} ball={!ball} playerid={keeper} onClick={this.handleChildClick} />;
     if (user === 1) {
-      children = [ 
+      children = [
         <NonSlot />, <NonSlot />, GKSlot, <NonSlot />, <NonSlot />,
-        ...children 
+        ...children
       ];
     } else {
       children = [

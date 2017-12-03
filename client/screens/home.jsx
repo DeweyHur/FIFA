@@ -6,8 +6,8 @@ const UserSquad = require('../components/usersquad.jsx');
 const squadProxy = require('../proxies/squad');
 const userProxy = require('../proxies/user');
 
-const DuelImage = "https://image.flaticon.com/icons/svg/53/53195.svg";
-const TeamSelectionImage = "https://d30y9cdsu7xlg0.cloudfront.net/png/20290-200.png";
+const DuelImage = 'https://image.flaticon.com/icons/svg/53/53195.svg';
+const TeamSelectionImage = 'https://d30y9cdsu7xlg0.cloudfront.net/png/20290-200.png';
 
 module.exports = class extends React.Component {
   constructor(props) {

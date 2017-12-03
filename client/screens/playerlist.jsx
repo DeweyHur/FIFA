@@ -11,7 +11,7 @@ class Slot extends React.Component {
   }
 
   render() {
-    const { addible, index, slot, onClick } = this.props;
+    const { addible, index, slot } = this.props;
     if (slot) {
       return (
         <div className="slot occupied" onMouseOver={() => {
@@ -48,19 +48,19 @@ module.exports = class extends React.Component {
   handleChildClick(item) {
     if (this.currentFocus) {
       this.currentFocus.setState({ ...this.state, selected: undefined });
-      delete this.currentFocus;
+      Reflect.delete(this.currentFocus);
     }
     this.currentFocus = item;
   }
 
   render() {
     const { selectedIndex, formations } = this.state;
-    const formation = formation[selectedIndex];
+    const formation = formations[selectedIndex];
     const addible = formation.filter(slot => slot).length < 11;
     return (
       <section id="formation">
         {formation[selectedIndex].map((slot, index) => {
-          return <Slot key={selectedIndex + '.' + index} addible={formation} index={index} slot={slot} onClick={this.handleChildClick} />;
+          return <Slot key={`${selectedIndex}.${index}`} addible={formation} index={index} slot={slot} onClick={this.handleChildClick} />;
         })}
       </section>
     );

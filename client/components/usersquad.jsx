@@ -32,7 +32,7 @@ module.exports = class extends React.Component {
           <span className="def">{team.def}</span>
           </div>
         </div>
-      );  
+      );
     } else {
       return (
         <Loader />

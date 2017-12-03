@@ -11,7 +11,7 @@ const staticdata = require('./staticdata');
     console.log('Fetched me', me);
     if (me) {
       const squad = await squadProxy.fetchMine();
-      console.log('Fetched my squad', squad);  
+      console.log('Fetched my squad', squad);
     }
   } catch (e) {
     console.error(e);

@@ -12,7 +12,7 @@ const userProxy = require('../proxies/user');
 const staticdata = require('../staticdata');
 const { MaxPhase, MaxTime, PhaseNames } = require('../../game');
 
-const HomeImage = "https://image.freepik.com/free-icon/worker-in-front-of-a-computer-monitor_318-47857.jpg";
+const HomeImage = 'https://image.freepik.com/free-icon/worker-in-front-of-a-computer-monitor_318-47857.jpg';
 const SlideShowSeconds = 2;
 const SecondsPerTime = 90 * 60 / MaxTime;
 

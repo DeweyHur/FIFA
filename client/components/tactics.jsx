@@ -10,10 +10,11 @@ module.exports = class extends React.Component {
   }
 
   handlePhaseUpdate(phase) {
-    if (this.props.editable === true)
+    if (this.props.editable === true) {
       this.setState({ ...this.state, phase });
+    }
   }
-  
+
   render() {
     const { user, formation, keeper, ball, editable } = this.props;
     const phase = _.get(this.state, 'phase') || _.get(this.props, 'phase');

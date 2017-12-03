@@ -4,7 +4,7 @@ let mongoose = require('mongoose');
 // Define our user schema
 let MatchSchema = new mongoose.Schema({
   _id: String,
-  createdAt: { type : Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now },
   homeUserId: String,
   homeTeamId: Number,
   homeFormation: mongoose.Schema.Types.Mixed,

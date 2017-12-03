@@ -14,7 +14,7 @@ exports.getUser = async (req, res) => {
   try {
     const userid = _.get(req, 'params.userid');
     const user = await User.findById(userid).lean();
-    res.send(user).status(200);    
+    res.send(user).status(200);
   } catch (e) {
     res.sendStatus(404);
   }
@@ -24,20 +24,20 @@ exports.createUser = (email, name) => {
   return User.find({ _id: email })
     .then((users) => {
       let user = users && users.length > 0 ? users[0] : null;
-      if (!user) {
+      if (user) {
+        console.log(`User Signed in: ${user.name}(${user._id})`);
+        return user;
+      } else {
         user = new User({ _id: email, name });
         return user.save()
-          .then(user => {
-            console.log(`User Created: ${user.name}(${user._id})`);
+          .then(createdUser => {
+            console.log(`User Created: ${createdUser.name}(${createdUser._id})`);
             return user;
           })
           .catch(err => {
             console.error(`User Creation Failed: ${name}(${email})`, err);
             throw err;
           });
-      } else {
-        console.log(`User Signed in: ${user.name}(${user._id})`);
-        return user;
       }
     })
     .catch(err => {

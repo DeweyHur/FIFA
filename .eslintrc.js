@@ -10,6 +10,7 @@ module.exports = {
             "experimentalObjectRestSpread": true,
             "jsx": true
         },
+        "ecmaVersion": 2017,
         "sourceType": "module"
     },
     "plugins": [
@@ -21,7 +22,7 @@ module.exports = {
         "array-bracket-spacing": "off",
         "array-callback-return": "error",
         "array-element-newline": "off",
-        "arrow-body-style": "error",
+        "arrow-body-style": "off",
         "arrow-parens": "off",
         "arrow-spacing": [
             "error",
@@ -75,7 +76,7 @@ module.exports = {
         "function-paren-newline": "off",
         "generator-star-spacing": "error",
         "getter-return": "error",
-        "global-require": "error",
+        "global-require": "off",
         "guard-for-in": "off",
         "handle-callback-err": "error",
         "id-blacklist": "error",
@@ -89,6 +90,7 @@ module.exports = {
         "indent-legacy": "off",
         "init-declarations": "error",
         "jsx-quotes": "error",
+        "react/jsx-uses-vars": 2,
         "key-spacing": "error",
         "keyword-spacing": "error",
         "line-comment-position": "error",
@@ -131,7 +133,7 @@ module.exports = {
         "no-extend-native": "error",
         "no-extra-bind": "error",
         "no-extra-label": "error",
-        "no-extra-parens": "error",
+        "no-extra-parens": "off",
         "no-floating-decimal": "error",
         "no-implicit-coercion": "error",
         "no-implicit-globals": "error",
@@ -189,7 +191,7 @@ module.exports = {
         "no-trailing-spaces": "error",
         "no-undef-init": "error",
         "no-undefined": "off",
-        "no-underscore-dangle": "error",
+        "no-underscore-dangle": "off",
         "no-unmodified-loop-condition": "error",
         "no-unneeded-ternary": "error",
         "no-unused-expressions": "warn",
@@ -235,10 +237,7 @@ module.exports = {
         "prefer-spread": "error",
         "prefer-template": "error",
         "quote-props": "off",
-        "quotes": [
-            "error",
-            "single"
-        ],
+        "quotes": "off",
         "radix": "error",
         "require-await": "error",
         "require-jsdoc": "off",

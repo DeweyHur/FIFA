@@ -5,7 +5,7 @@ const squadProxy = require('../proxies/squad');
 const nav = require('../components/nav.jsx');
 const staticdata = require('../staticdata');
 
-const GetItImage = "http://www.cormackcarr.com/wp-content/uploads/2013/07/Get-it-now-button.jpg";
+const GetItImage = 'http://www.cormackcarr.com/wp-content/uploads/2013/07/Get-it-now-button.jpg';
 
 class Team extends React.Component {
   constructor(props) {

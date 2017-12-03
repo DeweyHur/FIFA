@@ -1,29 +1,30 @@
-const Proxy = require('./proxy');
+const { Proxy, request } = require('./proxy');
 const _ = require('lodash');
 
 class UserProxy extends Proxy {
   constructor() {
-    super ();
+    super();
     this.cache = { data: {} };
   }
 
   myid() {
-    return _.get(this.cache, "myid");
+    return _.get(this.cache, 'myid');
   }
 
   async who(userid) {
     let user = _.get(this.cache, `data["${userid}"]`);
-    if (!user)
-      user = await this.request('GET', `/user/${userid}`);
-    else
+    if (user) {
       await Promise.resolve(() => user);
+    } else {
+      user = await request('GET', `/user/${userid}`);
+    }
     console.log('who', userid, user);
     return user;
   }
 
   async fetchMe() {
     try {
-      const me = await this.request('GET', '/user/me');
+      const me = await request('GET', '/user/me');
       localStorage.setItem('fifaweb-bearer', JSON.stringify(me.accessToken));
       this.assign({
         myid: me._id,
@@ -35,7 +36,7 @@ class UserProxy extends Proxy {
       this.assign({
         myid: undefined
       });
-      delete this.me;
+      Reflect.delete(this.me);
       return null;
     }
   }

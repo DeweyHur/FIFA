@@ -1,6 +1,6 @@
 const React = require('react');
 
-module.exports = (props) => {
+module.exports = () => {
   return (
     <div className="sk-cube-grid">
       <div className="sk-cube sk-cube1"></div>

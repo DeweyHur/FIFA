@@ -14,18 +14,18 @@ const strategyHandler = (profileParser, accessToken, refreshToken, profile, call
       .catch(err => callback(err, null));
   } else {
     console.error('email or name is invalid', email, name, profile);
-    callback('email or name is invalid', null);
+    return callback('email or name is invalid', null);
   }
 };
 
 passport.use(new GoogleStrategy(config.googleAuth, (p1, p2, p3, p4) => strategyHandler(profile => ({
   email: _.get(profile, 'emails[0].value'),
-  name: profile.displayName  
+  name: profile.displayName
 }), p1, p2, p3, p4)));
 passport.use(new FacebookStrategy(_.defaults({
   profileFields: ['displayName', 'email']
 }, config.facebookAuth), (p1, p2, p3, p4) => strategyHandler(profile => ({
-  email: _.get(profile, 'emails[0].value') || profile.id + '@facebook.com',
+  email: _.get(profile, 'emails[0].value') || `${profile.id}@facebook.com`,
   name: profile.displayName
 }), p1, p2, p3, p4)));
 
@@ -36,7 +36,7 @@ passport.deserializeUser((user, done) => {
   done(null, user);
 })
 
-exports.googleAuth = passport.authenticate('google', { scope: [ 'profile', 'email' ]});
+exports.googleAuth = passport.authenticate('google', { scope: ['profile', 'email'] });
 exports.googleAuthCallback = passport.authenticate('google', { successRedirect: '/' });
 exports.facebookAuth = passport.authenticate('facebook');
 exports.facebookAuthCallback = passport.authenticate('facebook', { successRedirect: '/' });

@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const Proxy = require('./proxy');
+const { Proxy, request } = require('./proxy');
 const userProxy = require('./user');
 const SlotsPerPhase = 25;
 
@@ -13,7 +13,7 @@ class SquadProxy extends Proxy {
     return _.get(this.cache, `data["${userid}"]`);
   }
 
-  whoseFormation(userid, phase) {
+  whoseFormation(userid) {
     const formation = this.whoseSquad(userid).formation || {};
     return this.convertFormationToArray(formation);
   }
@@ -27,13 +27,13 @@ class SquadProxy extends Proxy {
   }
 
   async setTeam(teamid) {
-    const updates = await this.request('PUT', `/squad/mine/team/${teamid}`);
+    const updates = await request('PUT', `/squad/mine/team/${teamid}`);
     this.assign({ data: { ...this.cache.data, ...updates } });
     return this.mySquad();
   }
 
   async fetchMine() {
-    const updates = await this.request('GET', '/squad/mine');
+    const updates = await request('GET', '/squad/mine');
     this.assign({ data: { ...this.cache.data, ...updates } });
     return this.mySquad();
   }
