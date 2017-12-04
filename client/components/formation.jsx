@@ -45,7 +45,7 @@ const NonSlot = () => {
   );
 }
 
-module.exports = class extends React.Component {
+class Formation extends React.Component {
   constructor(props) {
     super(props);
     this.handleChildClick = this.handleChildClick.bind(this);
@@ -60,7 +60,7 @@ module.exports = class extends React.Component {
   }
 
   render() {
-    let { phase, user, ball, formation, boundary, keeper } = this.props;
+    let { phase, user, ball, formation, boundary, keeper, homegk, awaygk } = this.props;
     if (user === 1) {
       formation = _.reverse(formation);
     }
@@ -71,18 +71,6 @@ module.exports = class extends React.Component {
         return <Slot key={index} user={user} ball={slot === ball} slot={slot} playerid={playerid} onClick={this.handleChildClick} />;
       })
     ];
-    // const GKSlot = <Slot key="GK" user={user} ball={!ball} playerid={keeper} onClick={this.handleChildClick} />;
-    // if (user === 1) {
-    //   children = [
-    //     <NonSlot />, <NonSlot />, GKSlot, <NonSlot />, <NonSlot />,
-    //     ...children
-    //   ];
-    // } else {
-    //   children = [
-    //     ...children,
-    //     <NonSlot />, <NonSlot />, GKSlot, <NonSlot />, <NonSlot />
-    //   ];
-    // }
 
     let style = {};
     if (boundary) {
@@ -94,6 +82,43 @@ module.exports = class extends React.Component {
           scaleY(${boundary.v / 100})
         `,
       };
+
+    } else {
+      const GKSlot = <Slot key="GK" user={user} ball={!ball} playerid={keeper} onClick={this.handleChildClick} />;
+      if (user === 1) {
+        children = [
+          <NonSlot />, <NonSlot />, GKSlot, <NonSlot />, <NonSlot />,
+          ...children
+        ];
+      } else {
+        children = [
+          ...children,
+          <NonSlot />, <NonSlot />, GKSlot, <NonSlot />, <NonSlot />
+        ];
+      }
+    }
+
+    if (homegk && awaygk) {
+      const gkStyle = {
+        transform: `
+          scaleX(${boundary.h / 100})
+          scaleY(${boundary.v / 100})          
+        `
+      };
+      return (
+        <div className="ground">
+          <div className="keeper" style={gkStyle}>
+            <Slot key="awaygk" id="awaygk" user={1} ball={user === 1 && ball === undefined} playerid={awaygk} />
+          </div>
+          <div className="formation" style={style}>
+            {children}
+          </div>
+          <div className="keeper" style={gkStyle}>
+            <Slot key="homegk" id="homegk" user={0} ball={user === 0 && ball === undefined} playerid={homegk} />
+          </div>
+        </div>
+
+      );
     }
     return (
       <div className="ground">
@@ -103,4 +128,6 @@ module.exports = class extends React.Component {
       </div>
     );
   }
-};
+}
+
+module.exports = Formation;

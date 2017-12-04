@@ -55,9 +55,14 @@ footer {
 .ground .formation {
   display: grid;
   grid-template-columns: repeat(5, 17vw);  
-  grid-template-rows: repeat(5, 19vw);
+  grid-template-rows: repeat(5, 17vw);
+  transition-duration: 1s;
 }
-.ground .formation .slot {
+.ground .keeper {
+  text-align: center;
+}
+
+.slot {
   display: inline-grid;
   font-size: 0.8em;
   border: 1px dotted #ccc;
@@ -66,21 +71,21 @@ footer {
   align-items: center;
   transition-duration: 1s;
 }
-.ground .formation .slot .ovr {
+.slot .ovr {
   position: absolute;
   font-size: 1.4em;
   margin-left: 1vw;
 }
-.ground .formation .slot img {
+.slot img {
   width: 14vw;
   height: auto;
   display: inline-flex;
   object-fit: contain;
 }
-.ground .formation .slot.ball {
+.slot.ball {
   background-color: #DC1
 }
-.ground .formation .slot.none {
+.slot.none {
   border: none;
 }
 

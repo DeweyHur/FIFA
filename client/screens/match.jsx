@@ -149,7 +149,7 @@ module.exports = class extends React.Component {
             )
           </div>,
           <Phases key="phases" phase={turn.phase} />,
-          <Formation key="formation" formation={formation} user={turn.user} ball={turn.slot} phase={turn.phase} boundary={turn.boundary} keeper={keeper} />,
+          <Formation key="formation" formation={formation} user={turn.user} ball={turn.slot} phase={turn.phase} boundary={turn.boundary} awaygk={awayFormation.GK} homegk={homeFormation.GK} />,
           <Description key="description" turn={turn} prevTurn={prevTurn} matchend={matchend} formations={[homeFormation, awayFormation]} />,
           <div key="main" className="navButton" id="navHome" onClick={() => {
             if (this.timeout) {
