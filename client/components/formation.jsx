@@ -54,13 +54,13 @@ module.exports = class extends React.Component {
   handleChildClick(item) {
     if (this.currentFocus) {
       this.currentFocus.setState({ ...this.state, selected: undefined });
-      Reflect.deleteProperty(this.currentFocus);
+      Reflect.deleteProperty(this, 'currentFocus');
     }
     this.currentFocus = item;
   }
 
   render() {
-    let { phase, user, ball, formation, keeper } = this.props;
+    let { phase, user, ball, formation, boundary, keeper } = this.props;
     if (user === 1) {
       formation = _.reverse(formation);
     }
@@ -71,22 +71,35 @@ module.exports = class extends React.Component {
         return <Slot key={index} user={user} ball={slot === ball} slot={slot} playerid={playerid} onClick={this.handleChildClick} />;
       })
     ];
-    const GKSlot = <Slot key="GK" user={user} ball={!ball} playerid={keeper} onClick={this.handleChildClick} />;
-    if (user === 1) {
-      children = [
-        <NonSlot />, <NonSlot />, GKSlot, <NonSlot />, <NonSlot />,
-        ...children
-      ];
-    } else {
-      children = [
-        ...children,
-        <NonSlot />, <NonSlot />, GKSlot, <NonSlot />, <NonSlot />
-      ];
-    }
+    // const GKSlot = <Slot key="GK" user={user} ball={!ball} playerid={keeper} onClick={this.handleChildClick} />;
+    // if (user === 1) {
+    //   children = [
+    //     <NonSlot />, <NonSlot />, GKSlot, <NonSlot />, <NonSlot />,
+    //     ...children
+    //   ];
+    // } else {
+    //   children = [
+    //     ...children,
+    //     <NonSlot />, <NonSlot />, GKSlot, <NonSlot />, <NonSlot />
+    //   ];
+    // }
 
+    let style = {};
+    if (boundary) {
+      style = {
+        transform: `
+          translateX(${0.5 * (boundary.x - boundary.h + 100)}%) 
+          translateY(${0.5 * (boundary.y - boundary.v + 100)}%)
+          scaleX(${boundary.h / 100})
+          scaleY(${boundary.v / 100})
+        `,
+      };
+    }
     return (
-      <div className="formation">
-        {children}
+      <div className="ground">
+        <div className="formation" style={style}>
+          {children}
+        </div>
       </div>
     );
   }

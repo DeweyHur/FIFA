@@ -43,7 +43,7 @@ module.exports = class extends React.Component {
   handleChildClick(item) {
     if (this.currentFocus) {
       this.currentFocus.setState({ ...this.state, selected: undefined });
-      Reflect.deleteProperty(this.currentFocus);
+      Reflect.deleteProperty(this, 'currentFocus');
     }
     this.currentFocus = item;
   }

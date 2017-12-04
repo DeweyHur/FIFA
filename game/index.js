@@ -98,7 +98,11 @@ class Formation {
 
   findPlayerSlot(playerid, phase) {
     const playerSlot = _.findKey(this.data, (pid, slot) => isWithinPhase(phase, slot) && playerid === pid);
-    return Number.parseInt(playerSlot, 10);
+    if (playerSlot) {
+      return Number.parseInt(playerSlot, 10);
+    } else {
+      throw "WTF?!";
+    }
   }
 
   kickoffPlayer() {
@@ -163,7 +167,7 @@ class Turn {
     if (/kickoff|keeper|turnover/.test(action.to)) {
       newTurn = { ...newTurn, ...this.turnover() }
       switch (action.to) {
-        case 'keeper': Reflect.deleteProperty(this.slot); break;
+        case 'keeper': Reflect.deleteProperty(this, 'slot'); break;
         case 'turnover': newTurn.slot = newTurn.markman; break;
         case 'kickoff':
           this.setupKickoff(newTurn, newTurn.user);
@@ -190,7 +194,7 @@ class Turn {
       if (action.distance) {
         const user = newTurn.user || this.user;
         newTurn.boundary.y += Math.sign(user - 0.5) * action.distance;
-        newTurn.boundary.y = Math.min(Math.max(-BoundaryLength / 2, newTurn.boundary.y), BoundaryLength);
+        newTurn.boundary.y = Math.min(Math.max(-BoundaryLength / 2 + newTurn.boundary.v, newTurn.boundary.y), BoundaryLength - newTurn.boundary.h);
         newTurn.phase = _.findIndex([-50, 0, 50, 100], line => newTurn.boundary.y * Math.sign(this.user - 0.5) < line);
       }
 
@@ -204,7 +208,7 @@ class Turn {
     if (newTurn.slot !== undefined && newTurn.user === undefined) {
       const src = getSlotInfo(this.slot, this.user);
       const dest = getSlotInfo(newTurn.slot, this.user);
-      const direction = -Math.sign(this.user - 1) * (dest.x - src.x);
+      const direction = -Math.sign((this.user - 1) * (dest.x - src.x));
       newTurn.boundary.x += direction * 5;
     }
 

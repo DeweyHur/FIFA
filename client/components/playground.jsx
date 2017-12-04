@@ -7,6 +7,9 @@ const AspectRatio = 1.5;
 const HeightModifier = 2;
 const SlideShowSeconds = 2;
 
+/**
+ * @return [ { x, y, slot, user, player }, ... ]
+ */
 const calcPositions = (turn, formations) => {
   const { boundary } = turn;
   const district = { w: boundary.h * 2 / Columns, h: boundary.v * 2 / Rows };
@@ -66,56 +69,65 @@ const calcPositions = (turn, formations) => {
 }
 
 module.exports = class extends React.Component {
-  render() {
-    const { turn, formations } = this.props;
+  shouldComponentUpdate(nextProps) {
+    return this.props.match !== nextProps.match;
+  }
 
-    const positions = calcPositions(turn, formations);
-    let children = [
-      <rect key="boundary" className="boundary"
-        x={turn.boundary.x - turn.boundary.h}
-        y={(turn.boundary.y - turn.boundary.v) * 2}
-        width={turn.boundary.h * 2}
-        height={turn.boundary.v * 2 * 2}
-      />,
-      ...positions.map((props, index) => {
-        const prevProps = this.positions ? this.positions[index] : {};
-        const { x, y, user, player } = props;
-        const key = `${user}_${player.playerid}`;
-        return (
-          <g key={key}>
-            <circle className={user === 1 ? 'awayteam' : 'hometeam'} cx={x} cy={y * AspectRatio} r="5">
-              <animate attributeName="cx" from={prevProps.x} to={x} dur={`${SlideShowSeconds}s`} repeatCount="infinite" />
-              <animate attributeName="cy" from={prevProps.y * AspectRatio} to={y * AspectRatio} dur={`${SlideShowSeconds}s`} repeatCount="infinite" />
-            </circle>
-            <text x={x} y={y * AspectRatio} textAnchor="middle">
-              <animate attributeName="x" from={prevProps.x} to={x} dur={`${SlideShowSeconds}s`} repeatCount="infinite" />
-              <animate attributeName="y" from={prevProps.y * AspectRatio} to={y * AspectRatio} dur={`${SlideShowSeconds}s`} repeatCount="infinite" />
-              {player.number}
-            </text>
-          </g>
-        );
-      }),
+  render() {
+    const { match, formations } = this.props;
+
+    let children = [];
+    const matchPositionsPerTurn = match.history.map(turn => calcPositions(turn, formations));
+    const [firstPositions] = matchPositionsPerTurn;
+    firstPositions.forEach((firstPosition, index) => {
+      const mPath = `M${
+        matchPositionsPerTurn
+          .map(turnPositions => {
+            const turnPosition = turnPositions[index];
+            return `${Math.trunc(turnPosition.x)},${Math.trunc(turnPosition.y * AspectRatio)}`;
+          })
+          .join(' L')
+        }`;
+      const { user, player } = firstPosition;
+      const mPathId = `${user === 1 ? 'A' : 'H'}${player.playerid}`;
+      const dur = `${matchPositionsPerTurn.length * SlideShowSeconds}s`;
+      children.push(
+        <g key={mPathId}>
+          <path d={mPath} id={mPathId} rotate="auto" fill="none" stroke="none" />
+          <animateMotion dur={dur} repeatCount="1">
+            <mpath href={`#${mPathId}`} />
+          </animateMotion>
+          <circle className={user === 1 ? 'awayteam' : 'hometeam'} r="5" />
+          <text textAnchor="middle">{player.number}</text>
+        </g>
+      );
+
+    })
+
+    children.push(
       <g key="homeGK">
         <circle className="hometeam" cx={0} cy={BoundaryLength * 0.5 * AspectRatio - 5} r="5" />
         <text x={0} y={BoundaryLength * 0.5 * AspectRatio - 5} textAnchor="middle">GK</text>
-      </g>,
+      </g>
+    );
+    children.push(
       <g key="awayGK">
         <circle className="awayteam" cx={0} cy={-BoundaryLength * 0.5 * AspectRatio + 5} r="5" />
         <text x={0} y={-BoundaryLength * 0.5 * AspectRatio + 5} textAnchor="middle">GK</text>
       </g>
-    ];
+    );
 
-    const holder = _.find(positions, { slot: turn.slot, user: turn.user });
-    const ball = holder
-      ? { x: holder.x, y: holder.y + Math.sign(turn.user - 0.5) * 3 }
-      : { x: 0, y: Math.sign(turn.user - 0.5) * (BoundaryLength * 0.5 + 3) };
-    children = [
-      ...children,
-      <circle key="ball" className="ball" cx={ball.x} cy={ball.y * AspectRatio} r="3">
-      </circle>
-    ];
+    // const holder = _.find(positions, { slot: turn.slot, user: turn.user });
+    // const ball = holder
+    //   ? { x: holder.x, y: holder.y + Math.sign(turn.user - 0.5) * 3 }
+    //   : { x: 0, y: Math.sign(turn.user - 0.5) * (BoundaryLength * 0.5 + 3) };
+    // children = [
+    //   ...children,
+    //   <circle key="ball" className="ball" cx={ball.x} cy={ball.y * AspectRatio} r="3">
+    //   </circle>
+    // ];
 
-    this.positions = positions;
+    // this.positions = positions;
     return (
       <svg className="playground" viewBox="-100 -150 200 300">
         {children}

@@ -47,13 +47,17 @@ footer {
   fill: #3498db;
 }
 
-.formation {
+.ground {
+  width: 85vw;
+  height: 65vh;
+  margin: 2vh 1vw 0vh 1vw;  
+}
+.ground .formation {
   display: grid;
   grid-template-columns: repeat(5, 17vw);  
   grid-template-rows: repeat(5, 19vw);
-  margin: 2vh 1vw;
 }
-.formation .slot {
+.ground .formation .slot {
   display: inline-grid;
   font-size: 0.8em;
   border: 1px dotted #ccc;
@@ -62,21 +66,21 @@ footer {
   align-items: center;
   transition-duration: 1s;
 }
-.formation .slot .ovr {
+.ground .formation .slot .ovr {
   position: absolute;
   font-size: 1.4em;
   margin-left: 1vw;
 }
-.formation .slot img {
+.ground .formation .slot img {
   width: 14vw;
   height: auto;
   display: inline-flex;
   object-fit: contain;
 }
-.formation .slot.ball {
+.ground .formation .slot.ball {
   background-color: #DC1
 }
-.formation .slot.none {
+.ground .formation .slot.none {
   border: none;
 }
 
