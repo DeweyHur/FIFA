@@ -3,7 +3,7 @@ const React = require('react');
 const UserSquad = require('../components/usersquad.jsx');
 const nav = require('../components/nav.jsx');
 const Phases = require('../components/phases.jsx');
-const Formation = require('../components/formation.jsx');
+const { MatchFormation } = require('../components/formation.jsx');
 const Player = require('../components/player.jsx');
 const matchProxy = require('../proxies/match');
 const squadProxy = require('../proxies/squad');
@@ -149,7 +149,7 @@ module.exports = class extends React.Component {
             )
           </div>,
           <Phases key="phases" phase={turn.phase} />,
-          <Formation key="formation" formation={formation} user={turn.user} ball={turn.slot} phase={turn.phase} boundary={turn.boundary} awaygk={awayFormation.GK} homegk={homeFormation.GK} />,
+          <MatchFormation key="formation" formation={formation} user={turn.user} ball={turn.slot} phase={turn.phase} boundary={turn.boundary} awaygk={awayFormation.GK} homegk={homeFormation.GK} />,
           <Description key="description" turn={turn} prevTurn={prevTurn} matchend={matchend} formations={[homeFormation, awayFormation]} />,
           <div key="main" className="navButton" id="navHome" onClick={() => {
             if (this.timeout) {

@@ -195,6 +195,10 @@ class Turn {
         const user = newTurn.user || this.user;
         newTurn.boundary.y += Math.sign(user - 0.5) * action.distance;
         newTurn.boundary.y = Math.min(Math.max(-BoundaryLength / 2 + newTurn.boundary.v, newTurn.boundary.y), BoundaryLength - newTurn.boundary.h);
+        if (-40 > newTurn.boundary.y || 40 < newTurn.boundary.y) {
+          debugger;
+          console.error(newTurn.boundary.y);
+        }
         newTurn.phase = _.findIndex([-50, 0, 50, 100], line => newTurn.boundary.y * Math.sign(this.user - 0.5) < line);
       }
 
