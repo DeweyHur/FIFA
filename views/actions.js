@@ -2,7 +2,7 @@ module.exports = {
   "BackPass": {
     "status": ["turnover", "ground", "kickoff"],
     "to": "ground",
-    "distance": 2,
+    "distance": 3,
     "weight": {
       "shortpassing": 1
     },
@@ -17,6 +17,7 @@ module.exports = {
     "weight": {
       "shortpassing": 1
     },
+    "distance": 2,
     "relatives": [
       [-1, -1, 2], [0, -1, 1], [1, -1, 2],
       [-1, 0, 4], [1, 0, 4],
@@ -29,6 +30,7 @@ module.exports = {
     "weight": {
       "heading": 1
     },
+    "distance": 2,
     "relatives": [
       [-1, -1, 1], [0, -1, 1], [1, -1, 1],
       [-1, 0, 1], [1, 0, 1],
@@ -48,6 +50,7 @@ module.exports = {
     "weight": {
       "longpassing": 1
     },
+    "distance": 4,
     "constraint": [12, 13, 17, 18],
     "absolutes": [[10, 5], [15, 5], [20, 5]]
   },
@@ -57,6 +60,7 @@ module.exports = {
     "weight": {
       "longpassing": 1
     },
+    "distance": 4,
     "constraint": [11, 12, 16, 17],
     "absolutes": [[14, 5], [19, 5], [24, 5]]
   },
@@ -77,6 +81,7 @@ module.exports = {
     "weight": {
       "longpassing": 1
     },
+    "distance": 30,
     "absolutes": [
       [0, 4], [1, 3], [2, 2], [3, 3], [4, 4],
       [5, 4], [6, 3], [7, 2], [8, 3], [9, 4]
@@ -88,6 +93,7 @@ module.exports = {
     "weight": {
       "longpassing": 1
     },
+    "distance": 30,
     "absolutes": [
       [0, 2], [1, 3], [2, 4], [3, 3], [4, 2],
       [5, 2], [6, 3], [7, 4], [8, 3], [9, 2]
@@ -99,6 +105,7 @@ module.exports = {
     "weight": {
       "reflexes": 1
     },
+    "distance": -5,
     "absolutes": [
       [16, 3], [17, 3], [18, 3],
       [21, 3], [22, 3], [23, 3]
@@ -147,7 +154,7 @@ module.exports = {
       "accel": 1
     },
     "cost": 8,
-    "distance": 5
+    "distance": 10
   },
   "HeadingShot": {
     "status": ["aerial"],

@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const React = require('react');
 const Player = require('./player.jsx');
 const staticdata = require('../staticdata');
@@ -9,7 +10,7 @@ module.exports = class extends React.Component {
   }
 
   render() {
-    const { user, selected, playerid, onClick } = this.props;
+    const { user, selected, playerid, onClick = _.noop } = this.props;
     const image = `https://cdn.sofifa.org/18/players/${playerid}.png`;
     const classes = ['slot'];
     if (playerid) {

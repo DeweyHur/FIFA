@@ -68,13 +68,13 @@ exports.movePosition = async (req, res) => {
     }
 
     if (!squad.formation[srcSlot]) {
-      return util.error(res, 402, `no one in from slot ${srcSlot}.`);
+      return util.error(res, 400, `no one in from slot ${srcSlot}.`);
     }
     if (squad.formation[destSlot]) {
-      return util.error(res, 402, `slot ${destSlot} already occupied`);
+      return util.error(res, 400, `slot ${destSlot} already occupied`);
     }
     if (!(srcSlot !== 'GK' || destSlot !== 'GK')) {
-      return util.error(res, 402, 'GK cannot move');
+      return util.error(res, 400, 'GK cannot move');
     }
 
     squad.formation[destSlot] = squad.formation[srcSlot];
@@ -111,7 +111,7 @@ exports.swapPosition = async (req, res) => {
       .map(([, slot]) => slot)
       .value();
     if (!(fromSlots.length === MaxPhase || fromSlots.length === 1 && fromSlots[0] === 'GK')) {
-      return util.error(res, 402, `Invalid from value ${srcPlayer}. Slot info: ${fromSlots.join(',')}`);
+      return util.error(res, 400, `Invalid from value ${srcPlayer}. Slot info: ${fromSlots.join(',')}`);
     }
 
     const toSlots = _(squad.formation)
@@ -120,7 +120,7 @@ exports.swapPosition = async (req, res) => {
       .map(([, slot]) => slot)
       .value();
     if (!(toSlots.length === MaxPhase || toSlots.length === 1 && toSlots[0] === 'GK' || toSlots.length === 0)) {
-      return util.error(res, 402, `Invalid from value ${destPlayer}. Slot info: ${toSlots.join(',')}`);
+      return util.error(res, 400, `Invalid from value ${destPlayer}. Slot info: ${toSlots.join(',')}`);
     }
 
     fromSlots.forEach(slot => squad.formation[slot] = destPlayer);

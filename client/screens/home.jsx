@@ -8,6 +8,7 @@ const UserSquad = require('../components/usersquad.jsx');
 const squadProxy = require('../proxies/squad');
 const userProxy = require('../proxies/user');
 const staticdata = require('../staticdata');
+const { isWithinPhase } = require('../../game');
 
 const DuelImage = 'https://image.flaticon.com/icons/svg/53/53195.svg';
 const TeamSelectionImage = 'https://d30y9cdsu7xlg0.cloudfront.net/png/20290-200.png';
@@ -16,7 +17,7 @@ module.exports = class extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { phase: 0 };
+    this.state = { phase: 1 };
     this.handleChildClick = this.handleChildClick.bind(this);
     this.handlePhaseUpdate = this.handlePhaseUpdate.bind(this);
     squadProxy.addListener('assign', () => this.setState({ ...this.state }));
@@ -29,10 +30,12 @@ module.exports = class extends React.Component {
     if (selected) {
       if (!playerid) {
         const { phase } = this.state;
-        const myFormation = squadProxy.myFormation(phase);
-        const src = Number.parseInt(_.findKey(myFormation, x => x === selected), 10);
+        const { formation } = squadProxy.mySquad();
+        const src = Number.parseInt(_.findKey(formation, (x, slot) => x === selected && isWithinPhase(phase, slot)), 10);
         const dest = _.get(item, 'props.slot');
-        squadProxy.movePosition(src, dest);
+        if (Number.isInteger(src) && Number.isInteger(dest)) {
+          squadProxy.movePosition(src, dest);
+        }
 
       } else if (selected !== playerid) {
         squadProxy.swapPosition(selected, playerid);
@@ -46,7 +49,7 @@ module.exports = class extends React.Component {
   }
 
   handlePhaseUpdate(phase) {
-    this.setState({ ...this.state, phase });
+    this.setState({ ...this.state, phase, selected: undefined });
   }
 
   render() {
@@ -63,7 +66,7 @@ module.exports = class extends React.Component {
         phase={phase}
         teamid={mySquad.teamid}
         selected={selected}
-        gk={myFormation.GK}
+        gk={mySquad.formation.GK}
         onChildClick={this.handleChildClick}
       />
     ];

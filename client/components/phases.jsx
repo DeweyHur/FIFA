@@ -1,10 +1,11 @@
+const _ = require('lodash');
 const React = require('react');
 const { MaxPhase, PhaseNames } = require('../../game');
 
 const Phase = (props) => {
-  const { phase, selected, onClick } = props;
+  const { phase, selected, onClick = _.noop } = props;
   return (
-    <div className={selected ? 'phase selected' : 'phase'} onMouseOver={() => onClick(phase)} >
+    <div className={selected ? 'phase selected' : 'phase'} onClick={() => onClick(phase)} >
       {PhaseNames[phase]}
     </div>
   );

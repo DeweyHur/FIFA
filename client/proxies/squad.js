@@ -13,9 +13,9 @@ class SquadProxy extends Proxy {
     return _.get(this.cache, `data["${userid}"]`);
   }
 
-  whoseFormation(userid) {
+  whoseFormation(userid, phase) {
     const formation = this.whoseSquad(userid).formation || {};
-    return this.convertFormationToArray(formation);
+    return this.convertFormationToArray(formation, phase);
   }
 
   mySquad() {
