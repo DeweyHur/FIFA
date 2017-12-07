@@ -26,8 +26,8 @@ class MatchFormation extends React.Component {
 
     let style = {
       transform: `
-        translateX(${0.5 * (boundary.x - boundary.h + 100)}%) 
-        translateY(${0.5 * (boundary.y - boundary.v + 100)}%)
+        translateX(${0.5 * (boundary.x)}%) 
+        translateY(${0.5 * (boundary.y)}%)
         scaleX(${boundary.h / 100})
         scaleY(${boundary.v / 100})
       `,

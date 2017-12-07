@@ -194,12 +194,12 @@ class Turn {
       if (action.distance) {
         const user = newTurn.user || this.user;
         newTurn.boundary.y += Math.sign(user - 0.5) * action.distance;
-        newTurn.boundary.y = Math.min(Math.max(-BoundaryLength / 2 + newTurn.boundary.v, newTurn.boundary.y), BoundaryLength - newTurn.boundary.h);
+        newTurn.boundary.y = Math.min(Math.max(-BoundaryLength / 2 + newTurn.boundary.v, newTurn.boundary.y), BoundaryLength / 2 - newTurn.boundary.v);
         if (-40 > newTurn.boundary.y || 40 < newTurn.boundary.y) {
           debugger;
           console.error(newTurn.boundary.y);
         }
-        newTurn.phase = _.findIndex([-50, 0, 50, 100], line => newTurn.boundary.y * Math.sign(this.user - 0.5) < line);
+        newTurn.phase = _.findIndex([-25, 0, 25, 50], line => newTurn.boundary.y * Math.sign(this.user - 0.5) < line);
       }
 
       if (newTurn.user === undefined && newTurn.phase && newTurn.phase !== this.phase) {
