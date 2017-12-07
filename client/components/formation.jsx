@@ -1,7 +1,6 @@
 const _ = require('lodash');
 const React = require('react');
 const Slot = require('./slot.jsx');
-const staticdata = require('../staticdata');
 const { MaxSlotPerPhase } = require('../../game');
 
 const NonSlot = () => {
@@ -21,7 +20,7 @@ class MatchFormation extends React.Component {
     let children = [
       formation.map((playerid, index) => {
         const slot = (user === 1) ? (phase + 1) * MaxSlotPerPhase - 1 - index : phase * MaxSlotPerPhase + index;
-        return <Slot key={index} user={user} ball={slot === ball} slot={slot} playerid={playerid} />;
+        return <Slot key={index} user={user} selected={slot === ball} slot={slot} playerid={playerid} />;
       })
     ];
 
@@ -58,45 +57,31 @@ class MatchFormation extends React.Component {
 }
 
 class ViewFormation extends React.Component {
-  constructor(props) {
-    super(props);
-    this.handleChildClick = this.handleChildClick.bind(this);
-  }
-
-  handleChildClick(item) {
-    if (this.currentFocus) {
-      this.currentFocus.setState({ ...this.state, selected: undefined });
-      Reflect.deleteProperty(this, 'currentFocus');
-    }
-    this.currentFocus = item;
-
-    const { onChildClick } = this.props;
-    if (onChildClick) {
-      onChildClick(item);
-    }
-  }
-
   render() {
-    let { formation, teamid } = this.props;
+    let { formation, phase, selected, gk, onChildClick } = this.props;
 
-    const GKSlot = <Slot key={formation.GK} playerid={formation.GK} onClick={this.handleChildClick} />;
+    const GKSlot = <Slot
+      key={gk}
+      slot="GK"
+      playerid={gk}
+      onClick={onChildClick}
+      selected={selected === gk}
+    />;
     let startingChildren = [
-      formation.map(playerid => <Slot key={playerid} playerid={playerid} onClick={this.handleChildClick} />),
-      <NonSlot />, <NonSlot />, GKSlot, <NonSlot />, <NonSlot />
+      formation.map((playerid, index) => <Slot
+        key={playerid}
+        slot={phase * MaxSlotPerPhase + index}
+        playerid={playerid}
+        onClick={onChildClick}
+        selected={selected === playerid}
+      />),
+      <NonSlot key="1" />, <NonSlot key="2" />, GKSlot, <NonSlot key="4" />, <NonSlot key="5" />
     ];
 
-    const startingEleven = _(formation).values().uniq().value();
-    const reserves = _(staticdata.players).filter({ teamid }).map('playerid').difference(startingEleven).value();
-    const reserveChildren = reserves.map(playerid => (<Slot key={playerid} playerid={playerid} onClick={this.handleChildClick} />));
-
     return (
-      <div className="ground">
-        <div className="formation">
+      <div key="ground" className="ground">
+        <div key="formation" className="formation">
           {startingChildren}
-        </div>
-        Reserves
-        <div className="reserves">
-          {reserveChildren}
         </div>
       </div>
     );

@@ -82,7 +82,7 @@ footer {
   display: inline-flex;
   object-fit: contain;
 }
-.slot.ball {
+.slot.selected {
   background-color: #DC1
 }
 .slot.none {

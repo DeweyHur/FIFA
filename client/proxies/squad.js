@@ -32,6 +32,18 @@ class SquadProxy extends Proxy {
     return this.mySquad();
   }
 
+  async movePosition(src, dest) {
+    const updates = await request('POST', '/squad/mine/position/move', { src, dest });
+    this.assign({ data: { ...this.cache.data, ...updates } });
+    return this.mySquad();
+  }
+
+  async swapPosition(src, dest) {
+    const updates = await request('POST', '/squad/mine/position/swap', { src, dest });
+    this.assign({ data: { ...this.cache.data, ...updates } });
+    return this.mySquad();
+  }
+
   async fetchMine() {
     const updates = await request('GET', '/squad/mine');
     this.assign({ data: { ...this.cache.data, ...updates } });

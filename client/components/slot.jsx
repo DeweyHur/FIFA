@@ -9,17 +9,15 @@ module.exports = class extends React.Component {
   }
 
   render() {
-    const { user, ball, playerid } = this.props;
+    const { user, selected, playerid, onClick } = this.props;
     const image = `https://cdn.sofifa.org/18/players/${playerid}.png`;
     const classes = ['slot'];
     if (playerid) {
       const player = staticdata.players[playerid];
       classes.push('occupied');
-      if (ball) classes.push('ball');
+      if (selected) classes.push('selected');
       return (
-        <div className={classes.join(' ')} onMouseOver={() => {
-          // nav.go('playerlist', { slot, index });
-        }}>
+        <div className={classes.join(' ')} onClick={() => onClick(this)}>
           <div key="ovr" className="ovr">{player.ovr}</div>
           <div key="portrait"><img src={image} /></div>
           <Player key="name" user={user} player={playerid} />
@@ -29,7 +27,7 @@ module.exports = class extends React.Component {
     } else {
       classes.push('empty');
       return (
-        <div className={classes.join(' ')}>
+        <div className={classes.join(' ')} onClick={() => onClick(this)}>
         </div>
       );
     }

@@ -72,6 +72,8 @@ router.get('/user/me', userAPI.getMe);
 router.get('/user/:userid', userAPI.getUser);
 router.get('/squad/mine', squadAPI.getMine);
 router.put('/squad/mine/team/:teamid', squadAPI.setTeam);
+router.post('/squad/mine/position/move', squadAPI.movePosition);
+router.post('/squad/mine/position/swap', squadAPI.swapPosition);
 
 router.put('/match', matchAPI.make);
 
